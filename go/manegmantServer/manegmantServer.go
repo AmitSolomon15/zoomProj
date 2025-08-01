@@ -28,7 +28,7 @@ func main() {
 
 // set headers
 func setCORSHeaders(w http.ResponseWriter) {
-	w.Header().Set("Access-Control-Allow-Origin", "https://zoomproj-front.onrender.com")
+	w.Header().Set("Access-Control-Allow-Origin", "https://zoomproj-front.onrender.com/:1")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json")
