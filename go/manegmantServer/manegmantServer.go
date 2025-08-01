@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"time"
@@ -95,25 +94,13 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 		{Key: "password", Value: pass},
 	})
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		return
 	}
 
 	fmt.Println(userResult.InsertedID)
 
-	cursor, err := userCollection.Find(ctx, bson.M{})
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var users []bson.M
-	if err = cursor.All(ctx, &users); err != nil {
-		log.Fatal(err)
-	}
-
-	for _, user := range users {
-		fmt.Println(user["username"])
-	}
+	signInHandler(w, r)
 
 }
 
