@@ -11,7 +11,8 @@ function SignInPage(){
 
     axios.post("https://zoomproj-back.onrender.com/submit-data-Sign-In",form)
       .then(response => {
-      
+        console.log(response)
+        console.log(response.data)
         console.log("Success:", response.data["username"]);
         
         var nav = document.querySelector("nav");

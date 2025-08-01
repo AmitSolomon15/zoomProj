@@ -183,7 +183,8 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
 
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://amitsol462:AmitS210706@cluster0.jbild9v.mongodb.net/"))
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		return
 	}
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
@@ -191,7 +192,8 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
 	//connect user to data base
 	err = client.Connect(ctx)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		return
 	}
 
 	defer client.Disconnect(ctx)
@@ -204,12 +206,14 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
 	cursor, err := userCollection.Find(ctx, bson.M{})
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		return
 	}
 
 	var users []bson.M
 	if err = cursor.All(ctx, &users); err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		return
 	}
 	for _, user := range users {
 		fmt.Println(user["username"])
