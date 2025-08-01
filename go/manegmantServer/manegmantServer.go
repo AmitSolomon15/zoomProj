@@ -176,12 +176,6 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
 		return // preflight
 	}
 
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://amitsol462:AmitS210706@cluster0.jbild9v.mongodb.net/"))
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
 	defer client.Disconnect(ctx)
 
 	//creates database
