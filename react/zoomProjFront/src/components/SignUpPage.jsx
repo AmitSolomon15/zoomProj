@@ -9,6 +9,11 @@ function SignUpPage(){
       .then(response => {
         console.log("Success:", response.data);
         // document.querySelector("#fName").textContent = "";
+        var nav = document.querySelector("nav");
+        nav.innerHTML = "";
+
+        localStorage.setItem("username",response.data["username"])
+        navigate("/SignedInUserPage");
       })
       .catch(error => {
         console.error("Error:", error);

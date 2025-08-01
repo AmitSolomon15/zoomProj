@@ -15,7 +15,13 @@ import (
 	//"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
+var (
+	client *mongo.Client
+	ctx    context.Context
+)
+
 func main() {
+	setClient()
 	http.HandleFunc("/submit-data-Sign-Up", submitHandler)
 	http.HandleFunc("/submit-data-Sign-In", signInHandler)
 	http.HandleFunc("/get-users", getUsers)
@@ -33,6 +39,22 @@ func setCORSHeaders(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json")
 
+}
+
+func setClient() {
+	var err error
+	client, err = mongo.NewClient(options.Client().ApplyURI("mongodb+srv://amitsol462:AmitS210706@cluster0.jbild9v.mongodb.net/"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+
+	err = client.Connect(ctx)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 }
 
 // sign up
@@ -55,19 +77,6 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 	lName := r.FormValue("lName")
 	uName := r.FormValue("uName")
 	pass := r.FormValue("pass")
-
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://amitsol462:AmitS210706@cluster0.jbild9v.mongodb.net/"))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-
-	//connect user to data base
-	err = client.Connect(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	defer client.Disconnect(ctx)
 
@@ -127,21 +136,6 @@ func signInHandler(w http.ResponseWriter, r *http.Request) {
 	uName := r.FormValue("uName")
 	pass := r.FormValue("pass")
 
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://amitsol462:AmitS210706@cluster0.jbild9v.mongodb.net/"))
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-
-	//connect user to data base
-	err = client.Connect(ctx)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
 	defer client.Disconnect(ctx)
 
 	//creates database
@@ -188,15 +182,6 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-
-	//connect user to data base
-	err = client.Connect(ctx)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
 	defer client.Disconnect(ctx)
 
 	//creates database
@@ -227,3 +212,7 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"error":"user not found"}`))
 	}
 }
+
+//func sendName(w http.ResponseWriter){
+//
+//}
