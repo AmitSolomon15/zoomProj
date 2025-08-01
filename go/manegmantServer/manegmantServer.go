@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -18,7 +19,11 @@ func main() {
 	http.HandleFunc("/submit-data-Sign-Up", submitHandler)
 	http.HandleFunc("/submit-data-Sign-In", signInHandler)
 	http.HandleFunc("/get-users", getUsers)
-	http.ListenAndServe(":8080", nil)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // fallback for local testing
+	}
+	http.ListenAndServe(":"+port, nil)
 }
 
 // sign up
@@ -119,7 +124,7 @@ func signInHandler(w http.ResponseWriter, r *http.Request) {
 
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://amitsol462:AmitS210706@cluster0.jbild9v.mongodb.net/"))
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
@@ -127,7 +132,7 @@ func signInHandler(w http.ResponseWriter, r *http.Request) {
 	//connect user to data base
 	err = client.Connect(ctx)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 
 	defer client.Disconnect(ctx)
@@ -140,12 +145,12 @@ func signInHandler(w http.ResponseWriter, r *http.Request) {
 	cursor, err := userCollection.Find(ctx, bson.M{"username": uName, "password": pass})
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 
 	var users []bson.M
 	if err = cursor.All(ctx, &users); err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	for _, user := range users {
 		fmt.Println(user["username"])
