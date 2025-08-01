@@ -5,7 +5,7 @@ function SignUpPage(){
 
     const form = new FormData(e.target);
 
-    axios.post("http://localhost:8080/submit-data-Sign-Up", form)
+    axios.post("https://zoomproj-back.onrender.com/submit-data-Sign-Up", form)
       .then(response => {
         console.log("Success:", response.data);
         // document.querySelector("#fName").textContent = "";

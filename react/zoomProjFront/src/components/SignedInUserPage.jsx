@@ -12,7 +12,7 @@ function SignedInUserPage(){
 
     function getUsers() {
    
-    axios.post("http://localhost:8080/get-users")
+    axios.post("https://zoomproj-back.onrender.com/get-users")
       .then(response => {
         console.log(response.data);
         var table = document.createElement("table");
