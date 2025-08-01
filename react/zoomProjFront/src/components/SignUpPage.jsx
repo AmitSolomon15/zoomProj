@@ -1,5 +1,8 @@
 import axios from 'axios'
+import { useNavigate } from "react-router-dom";
+
 function SignUpPage(){
+    const navigate = useNavigate(); 
     function handleSubmit(e) {
     e.preventDefault();
 
