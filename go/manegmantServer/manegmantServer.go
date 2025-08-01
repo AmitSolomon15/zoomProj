@@ -161,6 +161,7 @@ func signInHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
+	fmt.Println(len(users))
 	for _, user := range users {
 		fmt.Println(user["username"])
 	}
