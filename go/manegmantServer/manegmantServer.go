@@ -22,6 +22,8 @@ var (
 
 func main() {
 	setClient()
+	defer client.Disconnect(ctx)
+
 	http.HandleFunc("/submit-data-Sign-Up", submitHandler)
 	http.HandleFunc("/submit-data-Sign-In", signInHandler)
 	http.HandleFunc("/get-users", getUsers)
@@ -45,7 +47,8 @@ func setClient() {
 	var err error
 	client, err = mongo.NewClient(options.Client().ApplyURI("mongodb+srv://amitsol462:AmitS210706@cluster0.jbild9v.mongodb.net/"))
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		return
 	}
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
@@ -77,8 +80,6 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 	lName := r.FormValue("lName")
 	uName := r.FormValue("uName")
 	pass := r.FormValue("pass")
-
-	defer client.Disconnect(ctx)
 
 	//creates database
 	usersDatabase := client.Database("users")
@@ -136,8 +137,6 @@ func signInHandler(w http.ResponseWriter, r *http.Request) {
 	uName := r.FormValue("uName")
 	pass := r.FormValue("pass")
 
-	defer client.Disconnect(ctx)
-
 	//creates database
 	usersDatabase := client.Database("users")
 	//create collection in the database
@@ -176,8 +175,6 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
-
-	defer client.Disconnect(ctx)
 
 	//creates database
 	usersDatabase := client.Database("users")
