@@ -26,12 +26,19 @@ func main() {
 	http.ListenAndServe(":"+port, nil)
 }
 
+// set headers
+func setCORSHeaders(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "https://zoomproj-front.onrender.com")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Content-Type", "application/json")
+
+}
+
 // sign up
 func submitHandler(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Access-Control-Allow-Origin", "https://zoomproj-front.onrender.com/")
-	w.Header().Set("Access-Control-Allow-Methods", "POST")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	setCORSHeaders(w)
 
 	if r.Method == http.MethodOptions {
 		return // preflight
@@ -103,10 +110,7 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 // sign in
 func signInHandler(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Access-Control-Allow-Origin", "https://zoomproj-front.onrender.com")
-	w.Header().Set("Access-Control-Allow-Methods", "POST")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Content-Type", "application/json")
+	setCORSHeaders(w)
 
 	if r.Method == http.MethodOptions {
 		return // preflight
@@ -165,10 +169,8 @@ func signInHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getUsers(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "https://zoomproj-front.onrender.com")
-	w.Header().Set("Access-Control-Allow-Methods", "POST")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Content-Type", "application/json")
+
+	setCORSHeaders(w)
 
 	if r.Method == http.MethodOptions {
 		return // preflight
