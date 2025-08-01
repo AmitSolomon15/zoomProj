@@ -1,5 +1,6 @@
 import axios from "axios"
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+
 
 function SignInPage(){
     const navigate = useNavigate(); 
@@ -13,15 +14,10 @@ function SignInPage(){
       
         console.log("Success:", response.data["username"]);
         
-        document.body.innerHTML = "";
-        var name = document.createElement("div");
-        name.innerText = response.data["username"];
-        name.style.position = "absolute";
-        name.style.top = 0;
-        name.style.left = "10px";
-        name.style.color = "white";
-        name.style.fontSize = "20px";
-        document.body.appendChild(name);
+        var nav = document.querySelector("nav");
+        nav.innerHTML = "";
+
+        localStorage.setItem("username",response.data["username"])
         navigate("/SignedInUserPage");
       })
       .catch(error => {

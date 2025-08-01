@@ -1,5 +1,8 @@
 import axios from "axios";
 function SignedInUserPage(){
+
+    const username = localStorage.getItem("username");
+
     const tableStyle = {
         position:"absolute",
         right: "10px",
@@ -33,7 +36,12 @@ function SignedInUserPage(){
     }   
 
     return(
-        <button onClick={getUsers}>press me</button>
+      <div>
+      <div style={{ color: "white", fontSize: "20px",position: "absolute", top: 0,left: "10px" }}>
+        {`${username}`}
+      </div>
+      <button onClick={getUsers}>show all users</button>
+      </div>
         );
 }
 
