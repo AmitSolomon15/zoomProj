@@ -173,7 +173,8 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
 	setCORSHeaders(w)
 
 	if r.Method == http.MethodOptions {
-		return // preflight
+		w.WriteHeader(http.StatusOK)
+		return
 	}
 
 	defer client.Disconnect(ctx)
