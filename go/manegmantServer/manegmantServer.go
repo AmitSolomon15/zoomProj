@@ -28,7 +28,7 @@ func main() {
 
 // set headers
 func setCORSHeaders(w http.ResponseWriter) {
-	w.Header().Set("Access-Control-Allow-Origin", "https://zoomproj-front.onrender.com/:1")
+	w.Header().Set("Access-Control-Allow-Origin", "https://zoomproj-front.onrender.com")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "application/json")
@@ -130,6 +130,7 @@ func signInHandler(w http.ResponseWriter, r *http.Request) {
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://amitsol462:AmitS210706@cluster0.jbild9v.mongodb.net/"))
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
@@ -138,6 +139,7 @@ func signInHandler(w http.ResponseWriter, r *http.Request) {
 	err = client.Connect(ctx)
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 
 	defer client.Disconnect(ctx)
@@ -151,11 +153,13 @@ func signInHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 
 	var users []bson.M
 	if err = cursor.All(ctx, &users); err != nil {
 		fmt.Println(err)
+		return
 	}
 	for _, user := range users {
 		fmt.Println(user["username"])
