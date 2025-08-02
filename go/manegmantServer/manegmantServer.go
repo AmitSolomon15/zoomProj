@@ -20,7 +20,16 @@ var (
 	client   *mongo.Client
 	ctx      context.Context
 	listener net.Listener
+	user     *mUser
 )
+
+type mUser struct {
+	fName string
+	lName string
+	uName string
+	pass  string
+	port  int
+}
 
 func main() {
 	setClient()
@@ -46,6 +55,7 @@ func assignPort() {
 
 	// Get the assigned address and port
 	addr := listener.Addr().(*net.TCPAddr)
+	user.port = addr.Port
 	fmt.Printf("Server listening on IP: %s, Port: %d\n", addr.IP.String(), addr.Port)
 }
 
@@ -91,10 +101,10 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get values from the form
-	fName := r.FormValue("fName")
-	lName := r.FormValue("lName")
-	uName := r.FormValue("uName")
-	pass := r.FormValue("pass")
+	user.fName = r.FormValue("fName")
+	user.lName = r.FormValue("lName")
+	user.uName = r.FormValue("uName")
+	user.pass = r.FormValue("pass")
 
 	//creates database
 	usersDatabase := client.Database("users")
@@ -104,10 +114,10 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 	//insert data of 1 object
 
 	userResult, err := userCollection.InsertOne(ctx, bson.D{
-		{Key: "first name", Value: fName},
-		{Key: "last name", Value: lName},
-		{Key: "username", Value: uName},
-		{Key: "password", Value: pass},
+		{Key: "first name", Value: user.fName},
+		{Key: "last name", Value: user.lName},
+		{Key: "username", Value: user.uName},
+		{Key: "password", Value: user.pass},
 	})
 	if err != nil {
 		fmt.Println(err)
@@ -137,15 +147,15 @@ func signInHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get values from the form
-	uName := r.FormValue("uName")
-	pass := r.FormValue("pass")
+	user.uName = r.FormValue("uName")
+	user.pass = r.FormValue("pass")
 
 	//creates database
 	usersDatabase := client.Database("users")
 	//create collection in the database
 	userCollection := usersDatabase.Collection("users")
 
-	cursor, err := userCollection.Find(ctx, bson.M{"username": uName, "password": pass})
+	cursor, err := userCollection.Find(ctx, bson.M{"username": user.uName, "password": user.pass})
 
 	if err != nil {
 		fmt.Println(err)
@@ -209,7 +219,3 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"error":"user not found"}`))
 	}
 }
-
-//func sendName(w http.ResponseWriter){
-//
-//}
