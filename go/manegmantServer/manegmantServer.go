@@ -47,12 +47,12 @@ func main() {
 
 func assignPort() {
 	var err error
-	defer listener.Close()
+
 	listener, err = net.Listen("tcp", ":0")
 	if err != nil {
 		log.Fatalf("Error listening: %v", err)
 	}
-
+	defer listener.Close()
 	// Get the assigned address and port
 	addr := listener.Addr().(*net.TCPAddr)
 	user.port = addr.Port
