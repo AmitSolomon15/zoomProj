@@ -17,13 +17,15 @@ import (
 )
 
 var (
-	client *mongo.Client
-	ctx    context.Context
+	client   *mongo.Client
+	ctx      context.Context
+	listener net.Listener
 )
 
 func main() {
 	setClient()
 	defer client.Disconnect(ctx)
+	defer listener.Close()
 
 	http.HandleFunc("/submit-data-Sign-Up", submitHandler)
 	http.HandleFunc("/submit-data-Sign-In", signInHandler)
@@ -36,11 +38,12 @@ func main() {
 }
 
 func assignPort() {
-	listener, err := net.Listen("tcp", ":0")
+	var err error
+	listener, err = net.Listen("tcp", ":0")
 	if err != nil {
 		log.Fatalf("Error listening: %v", err)
 	}
-	defer listener.Close()
+
 	// Get the assigned address and port
 	addr := listener.Addr().(*net.TCPAddr)
 	fmt.Printf("Server listening on IP: %s, Port: %d\n", addr.IP.String(), addr.Port)
