@@ -1,6 +1,7 @@
 import axios from "axios";
+import React, { useState } from 'react';
 function SignedInUserPage(){
-
+    const [showButton, setShowButton] = useState(true);
     const username = localStorage.getItem("username");
 
     const tableStyle = {
@@ -28,6 +29,8 @@ function SignedInUserPage(){
         }
         table.appendChild(tableBody);
         document.body.appendChild(table);
+        setShowButton(false);
+
         
         })
       .catch(error => {
@@ -40,7 +43,9 @@ function SignedInUserPage(){
       <div style={{ color: "white", fontSize: "20px",position: "absolute", top: 0,left: "10px" }}>
         {`${username}`}
       </div>
+      {showButton && (
       <button onClick={getUsers}>show all users</button>
+      )}
       </div>
         );
 }
