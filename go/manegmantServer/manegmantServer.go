@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
+	"net"
 	"net/http"
 	"os"
 	"time"
@@ -31,6 +33,17 @@ func main() {
 		port = "8080" // fallback for local testing
 	}
 	http.ListenAndServe(":"+port, nil)
+}
+
+func assignPort() {
+	listener, err := net.Listen("tcp", ":0")
+	if err != nil {
+		log.Fatalf("Error listening: %v", err)
+	}
+	defer listener.Close()
+	// Get the assigned address and port
+	addr := listener.Addr().(*net.TCPAddr)
+	fmt.Printf("Server listening on IP: %s, Port: %d\n", addr.IP.String(), addr.Port)
 }
 
 // set headers
@@ -152,6 +165,8 @@ func signInHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte(`{"error":"user not found"}`))
 	}
+
+	assignPort()
 }
 
 func getUsers(w http.ResponseWriter, r *http.Request) {
