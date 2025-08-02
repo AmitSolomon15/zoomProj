@@ -11,6 +11,18 @@ function SignedInUserPage(){
         fontSize: "30px",
     }
 
+
+    function inviteUser(e){
+      axios.post("https://zoomproj-back.onrender.com/connect-user-udp",e.innerText)
+        .then(Response =>{
+          console.log(Response.data);
+        })
+        .catch(error =>{
+          console.log(error);
+        })
+    }
+
+
     function getUsers() {
    
     axios.post("https://zoomproj-back.onrender.com/get-users")
@@ -23,6 +35,7 @@ function SignedInUserPage(){
             const element = response.data[index]["username"];
             let tr = document.createElement("tr");
             let td = document.createElement("td");
+            td.onclick()
             td.innerText = element;
             tr.appendChild(td);
             tableBody.appendChild(tr);
@@ -36,6 +49,7 @@ function SignedInUserPage(){
       .catch(error => {
         console.error("Error:", error);
         });
+
     }   
 
     return(

@@ -28,7 +28,8 @@ type mUser struct {
 	lName string
 	uName string
 	pass  string
-	port  int
+	port  string
+	ip    string
 }
 
 func main() {
@@ -52,10 +53,28 @@ func assignPort() {
 	if err != nil {
 		log.Fatalf("Error listening: %v", err)
 	}
+
+	//creates database
+	usersDatabase := client.Database("users")
+	//create collection in the database
+	userOnLineCollection := usersDatabase.Collection("usersOnLine")
 	defer listener.Close()
 	// Get the assigned address and port
 	addr := listener.Addr().(*net.TCPAddr)
-	user.port = addr.Port
+	user.port = string(addr.Port)
+	user.ip = addr.IP.String()
+
+	userOnLineRes, err := userOnLineCollection.InsertOne(ctx, bson.D{
+		{"username", user.uName},
+		{"ip", addr.IP.String()},
+		{"port", string(addr.Port)},
+		{"time", time.Now()},
+	})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(userOnLineRes)
 	fmt.Printf("Server listening on IP: %s, Port: %d\n", addr.IP.String(), addr.Port)
 }
 
