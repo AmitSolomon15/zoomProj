@@ -65,10 +65,10 @@ func assignPort() {
 	user.ip = addr.IP.String()
 
 	userOnLineRes, err := userOnLineCollection.InsertOne(ctx, bson.D{
-		{"username", user.uName},
-		{"ip", addr.IP.String()},
-		{"port", string(addr.Port)},
-		{"time", time.Now()},
+		{Key: "username", Value: user.uName},
+		{Key: "ip", Value: addr.IP.String()},
+		{Key: "port", Value: fmt.Sprint(addr.Port)},
+		{Key: "time", Value: time.Now()},
 	})
 	if err != nil {
 		fmt.Println(err)

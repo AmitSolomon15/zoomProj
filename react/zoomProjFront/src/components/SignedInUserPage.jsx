@@ -35,7 +35,7 @@ function SignedInUserPage(){
             const element = response.data[index]["username"];
             let tr = document.createElement("tr");
             let td = document.createElement("td");
-            td.onclick()
+            //td.onclick()
             td.innerText = element;
             tr.appendChild(td);
             tableBody.appendChild(tr);
