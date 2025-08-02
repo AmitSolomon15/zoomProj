@@ -20,7 +20,7 @@ var (
 	client   *mongo.Client
 	ctx      context.Context
 	listener net.Listener
-	user     *mUser
+	user     mUser
 )
 
 type mUser struct {
@@ -34,7 +34,6 @@ type mUser struct {
 func main() {
 	setClient()
 	defer client.Disconnect(ctx)
-	defer listener.Close()
 
 	http.HandleFunc("/submit-data-Sign-Up", submitHandler)
 	http.HandleFunc("/submit-data-Sign-In", signInHandler)
@@ -48,6 +47,7 @@ func main() {
 
 func assignPort() {
 	var err error
+	defer listener.Close()
 	listener, err = net.Listen("tcp", ":0")
 	if err != nil {
 		log.Fatalf("Error listening: %v", err)
