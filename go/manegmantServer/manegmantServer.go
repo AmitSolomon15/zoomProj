@@ -38,6 +38,7 @@ func main() {
 
 	http.HandleFunc("/submit-data-Sign-Up", submitHandler)
 	http.HandleFunc("/submit-data-Sign-In", signInHandler)
+	http.HandleFunc("/disconnect", disconnectHandler)
 	http.HandleFunc("/get-users", getUsers)
 	port := os.Getenv("PORT")
 	if port == "" {
