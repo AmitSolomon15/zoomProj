@@ -23,10 +23,11 @@ function SignedInUserPage(){
     window.addEventListener("beforeunload", function () {
     //const username = localStorage.getItem("username");
 
-    axios.post("https://zoomproj-back.onrender.com/disconnect", JSON.stringify({ username }))
-      .catch((error) => {
-        console.error("Disconnect failed:", error);
+      const blob = new Blob([JSON.stringify({ username })], {
+        type: "application/json"
       });
+      
+      navigator.sendBeacon("https://zoomproj-back.onrender.com/disconnect", blob);
     });
 
 
