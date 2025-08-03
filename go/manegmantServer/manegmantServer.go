@@ -61,7 +61,7 @@ func assignPort() {
 	defer listener.Close()
 	// Get the assigned address and port
 	addr := listener.Addr().(*net.TCPAddr)
-	user.port = string(addr.Port)
+	user.port = fmt.Sprint(addr.Port)
 	user.ip = addr.IP.String()
 
 	userOnLineRes, err := userOnLineCollection.InsertOne(ctx, bson.D{
@@ -199,6 +199,25 @@ func signInHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	assignPort()
+}
+
+func disconnectHandler(w http.ResponseWriter, r *http.Request) {
+	setCORSHeaders(w)
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Only POST allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	sessionCollection := client.Database("users").Collection("sessions")
+	_, err := sessionCollection.DeleteOne(ctx, bson.M{"username": user.uName})
+	if err != nil {
+		http.Error(w, "Failed to delete session", http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Printf("Disconnected user: %s\n", user.uName)
+	w.WriteHeader(http.StatusOK)
 }
 
 func getUsers(w http.ResponseWriter, r *http.Request) {

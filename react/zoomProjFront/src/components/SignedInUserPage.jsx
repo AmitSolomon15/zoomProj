@@ -22,6 +22,16 @@ function SignedInUserPage(){
         })
     }
 
+    window.addEventListener("beforeunload", function () {
+    const username = localStorage.getItem("username"); 
+    if (username) {
+      navigator.sendBeacon(
+        "https://your-backend.onrender.com/disconnect",
+        new Blob([JSON.stringify({ username })], { type: 'application/json' })
+        );
+      }
+    });
+
 
     function getUsers() {
    
