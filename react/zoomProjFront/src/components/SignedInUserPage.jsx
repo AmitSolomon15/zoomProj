@@ -21,13 +21,13 @@ function SignedInUserPage(){
     }
 
     window.addEventListener("beforeunload", function () {
-    const username = localStorage.getItem("username"); 
+    //const username = localStorage.getItem("username");
     if (username) {
-      navigator.sendBeacon(
-        "https://zoomproj-back.onrender.com/disconnect",
-        new Blob([JSON.stringify({ username })], { type: 'application/json' })
-        );
-      }
+      axios.post("https://zoomproj-back.onrender.com/disconnect", username)
+        .catch((error) => {
+          console.error("Disconnect failed:", error);
+        });
+    }
     });
 
 
