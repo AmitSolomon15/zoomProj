@@ -1,7 +1,5 @@
 import axios from "axios";
-import React, { useState } from 'react';
 function SignedInUserPage(){
-    const [showButton, setShowButton] = useState(true);
     const username = localStorage.getItem("username");
 
     const tableStyle = {
@@ -26,7 +24,7 @@ function SignedInUserPage(){
     const username = localStorage.getItem("username"); 
     if (username) {
       navigator.sendBeacon(
-        "https://your-backend.onrender.com/disconnect",
+        "https://zoomproj-back.onrender.com/disconnect",
         new Blob([JSON.stringify({ username })], { type: 'application/json' })
         );
       }
@@ -38,6 +36,8 @@ function SignedInUserPage(){
     axios.post("https://zoomproj-back.onrender.com/get-users")
       .then(response => {
         console.log(response.data);
+        
+
         var table = document.createElement("table");
         Object.assign(table.style,tableStyle);
         var tableBody = document.createElement("tbody");
@@ -52,7 +52,7 @@ function SignedInUserPage(){
         }
         table.appendChild(tableBody);
         document.body.appendChild(table);
-        setShowButton(false);
+        
 
         
         })
@@ -67,9 +67,7 @@ function SignedInUserPage(){
       <div style={{ color: "white", fontSize: "20px",position: "absolute", top: 0,left: "10px" }}>
         {`${username}`}
       </div>
-      {showButton && (
       <button onClick={getUsers}>show all users</button>
-      )}
       </div>
         );
 }
