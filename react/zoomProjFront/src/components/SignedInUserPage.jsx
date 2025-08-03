@@ -1,7 +1,8 @@
 import axios from "axios";
 function SignedInUserPage(){
     const username = localStorage.getItem("username");
-    console.log(username);
+    console.log(JSON.stringify({ username }));
+
     const tableStyle = {
         position:"absolute",
         right: "10px",
