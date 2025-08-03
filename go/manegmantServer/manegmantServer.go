@@ -207,9 +207,16 @@ func disconnectHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("entered disconnect")
 
 	fmt.Println(user.uName)
+	var uName string
+
+	err := json.NewDecoder(r.Body).Decode(&uName)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	sessionCollection := client.Database("users").Collection("usersOnLine")
-	_, err := sessionCollection.DeleteOne(ctx, bson.M{"username": user.uName})
+	_, err = sessionCollection.DeleteOne(ctx, bson.M{"username": user.uName})
 	if err != nil {
 		http.Error(w, "Failed to delete session", http.StatusInternalServerError)
 		return
