@@ -1,7 +1,7 @@
 import axios from "axios";
 function SignedInUserPage(){
     const username = localStorage.getItem("username");
-
+    console.log(username);
     const tableStyle = {
         position:"absolute",
         right: "10px",
@@ -22,6 +22,7 @@ function SignedInUserPage(){
 
     window.addEventListener("beforeunload", function () {
     //const username = localStorage.getItem("username");
+
     axios.post("https://zoomproj-back.onrender.com/disconnect", {username})
       .catch((error) => {
         console.error("Disconnect failed:", error);
