@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -210,7 +211,15 @@ func disconnectHandler(w http.ResponseWriter, r *http.Request) {
 	var uName string
 	fmt.Println(r.Body)
 
-	err := json.NewDecoder(r.Body).Decode(&uName)
+	bodyBytes, err := io.ReadAll(r.Body)
+	if err != nil {
+		fmt.Println("Error reading body:", err)
+		return
+	}
+
+	fmt.Println("Raw body:", string(bodyBytes))
+
+	err = json.NewDecoder(r.Body).Decode(&uName)
 	if err != nil {
 		fmt.Println(err)
 		return
