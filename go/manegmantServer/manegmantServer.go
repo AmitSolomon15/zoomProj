@@ -208,6 +208,7 @@ func disconnectHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(user.uName)
 	var uName string
+	fmt.Println(r.Body)
 
 	err := json.NewDecoder(r.Body).Decode(&uName)
 	if err != nil {
