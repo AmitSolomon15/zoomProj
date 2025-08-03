@@ -35,11 +35,10 @@ function SignedInUserPage(){
     if (document.visibilityState === "hidden") {
       const username = localStorage.getItem("username");
 
-      const blob = new Blob([JSON.stringify({ username })], {
-      type: "application/json"
-      });
+      const form = new FormData();
+      form.append("username",username);
 
-      navigator.sendBeacon("https://zoomproj-back.onrender.com/disconnect", blob);
+      navigator.sendBeacon("https://zoomproj-back.onrender.com/disconnect", form);
     }
     });
 

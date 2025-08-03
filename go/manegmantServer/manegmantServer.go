@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net"
 	"net/http"
@@ -211,28 +210,21 @@ func disconnectHandler(w http.ResponseWriter, r *http.Request) {
 	var uName string
 	fmt.Println(r.Body)
 
-	bodyBytes, err := io.ReadAll(r.Body)
-	if err != nil {
-		fmt.Println("Error reading body:", err)
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		http.Error(w, "Error parsing form", http.StatusInternalServerError)
 		return
 	}
 
-	fmt.Println("Raw body:", string(bodyBytes))
-
-	err = json.NewDecoder(r.Body).Decode(&uName)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	uName = r.FormValue("username")
 	fmt.Println(user.uName)
 	sessionCollection := client.Database("users").Collection("usersOnLine")
-	_, err = sessionCollection.DeleteOne(ctx, bson.M{"username": user.uName})
+	_, err := sessionCollection.DeleteOne(ctx, bson.M{"username": uName})
 	if err != nil {
 		http.Error(w, "Failed to delete session", http.StatusInternalServerError)
 		return
 	}
 
-	fmt.Printf("Disconnected user: %s\n", user.uName)
+	fmt.Printf("Disconnected user: %s\n", uName)
 	w.WriteHeader(http.StatusOK)
 }
 
