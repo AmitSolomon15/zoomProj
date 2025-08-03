@@ -204,6 +204,7 @@ func signInHandler(w http.ResponseWriter, r *http.Request) {
 
 func disconnectHandler(w http.ResponseWriter, r *http.Request) {
 	setCORSHeaders(w)
+	fmt.Println("entered disconnect")
 
 	if r.Method != http.MethodPost {
 		http.Error(w, "Only POST allowed", http.StatusMethodNotAllowed)
