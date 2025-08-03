@@ -31,7 +31,17 @@ function SignedInUserPage(){
       navigator.sendBeacon("https://zoomproj-back.onrender.com/disconnect", blob);
     });
 
-  
+    document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "hidden") {
+      const username = localStorage.getItem("username");
+
+      const blob = new Blob([JSON.stringify({ username })], {
+      type: "application/json"
+      });
+
+      navigator.sendBeacon("/disconnect", blob);
+    }
+    });
 
 
     function getUsers() {
