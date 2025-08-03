@@ -21,12 +21,12 @@ function SignedInUserPage(){
     }
 
     window.addEventListener("beforeunload", function () {
-    //const username = localStorage.getItem("username");
+      const username = localStorage.getItem("username");
 
       const blob = new Blob([JSON.stringify({ username })], {
         type: "application/json"
       });
-      
+
       navigator.sendBeacon("https://zoomproj-back.onrender.com/disconnect", blob);
     });
 
