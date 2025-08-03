@@ -63,11 +63,18 @@ func assignPort() {
 	// Get the assigned address and port
 	addr := listener.Addr().(*net.TCPAddr)
 	user.port = fmt.Sprint(addr.Port)
-	user.ip = addr.IP.String()
+
+	ip, err := getOutboundIP()
+	if err != nil {
+		log.Printf("Could not get outbound IP: %v", err)
+		return
+	} else {
+		user.ip = ip.String()
+	}
 
 	userOnLineRes, err := userOnLineCollection.InsertOne(ctx, bson.D{
 		{Key: "username", Value: user.uName},
-		{Key: "ip", Value: addr.IP.String()},
+		{Key: "ip", Value: user.ip},
 		{Key: "port", Value: fmt.Sprint(addr.Port)},
 		{Key: "time", Value: time.Now()},
 	})
@@ -77,6 +84,17 @@ func assignPort() {
 	}
 	fmt.Println(userOnLineRes)
 	fmt.Printf("Server listening on IP: %s, Port: %d\n", addr.IP.String(), addr.Port)
+}
+
+func getOutboundIP() (net.IP, error) {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+	return localAddr.IP, nil
 }
 
 // set headers
