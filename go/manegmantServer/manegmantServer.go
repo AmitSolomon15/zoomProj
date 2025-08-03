@@ -206,7 +206,7 @@ func disconnectHandler(w http.ResponseWriter, r *http.Request) {
 	setCORSHeaders(w)
 	fmt.Println("entered disconnect")
 
-	fmt.Println(user.uName)
+	//fmt.Println(user.uName)
 	var uName string
 	fmt.Println(r.Body)
 
@@ -216,7 +216,7 @@ func disconnectHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	uName = r.FormValue("username")
-	fmt.Println(user.uName)
+	fmt.Println(uName)
 	sessionCollection := client.Database("users").Collection("usersOnLine")
 	_, err := sessionCollection.DeleteOne(ctx, bson.M{"username": uName})
 	if err != nil {

@@ -22,7 +22,7 @@ function SignedInUserPage(){
     }
 
     window.addEventListener("beforeunload", function () {
-      const username = localStorage.getItem("username");
+      const username = document.querySelector(".name")
 
       const form = new FormData();
       form.append("username",username);
@@ -66,7 +66,7 @@ function SignedInUserPage(){
 
     return(
       <div>
-      <div style={{ color: "white", fontSize: "20px",position: "absolute", top: 0,left: "10px" }}>
+      <div style={{ color: "white", fontSize: "20px",position: "absolute", top: 0,left: "10px" }} className="name">
         {`${username}`}
       </div>
       <button onClick={getUsers}>show all users</button>
