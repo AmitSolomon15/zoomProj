@@ -231,7 +231,7 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
 	//creates database
 	usersDatabase := client.Database("users")
 	//create collection in the database
-	userCollection := usersDatabase.Collection("users")
+	userCollection := usersDatabase.Collection("usersOnLine")
 
 	cursor, err := userCollection.Find(ctx, bson.M{})
 
