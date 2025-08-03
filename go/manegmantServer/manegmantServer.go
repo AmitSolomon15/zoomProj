@@ -211,6 +211,8 @@ func disconnectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println(user.uName)
+
 	sessionCollection := client.Database("users").Collection("usersOnLine")
 	_, err := sessionCollection.DeleteOne(ctx, bson.M{"username": user.uName})
 	if err != nil {
