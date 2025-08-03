@@ -23,7 +23,7 @@ function SignedInUserPage(){
     window.addEventListener("beforeunload", function () {
     //const username = localStorage.getItem("username");
 
-    axios.post("https://zoomproj-back.onrender.com/disconnect", JSON.parse(username))
+    axios.post("https://zoomproj-back.onrender.com/disconnect", JSON.stringify({ username }))
       .catch((error) => {
         console.error("Disconnect failed:", error);
       });
