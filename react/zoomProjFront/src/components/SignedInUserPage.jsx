@@ -39,7 +39,7 @@ function SignedInUserPage(){
       type: "application/json"
       });
 
-      navigator.sendBeacon("/disconnect", blob);
+      navigator.sendBeacon("https://zoomproj-back.onrender.com/disconnect", blob);
     }
     });
 
