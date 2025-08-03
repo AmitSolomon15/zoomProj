@@ -22,7 +22,7 @@ function SignedInUserPage(){
     }
 
     window.addEventListener("beforeunload", function () {
-      const username = document.querySelector(".name")
+      const username = document.querySelector(".name").innerText;
 
       const form = new FormData();
       form.append("username",username);
