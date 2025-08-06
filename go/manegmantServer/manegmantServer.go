@@ -85,7 +85,7 @@ func assignPort() {
 		return
 	}
 	fmt.Println(userOnLineRes)
-	fmt.Printf("Server listening on IP: %s, Port: %d\n", addr.IP.String(), addr.Port)
+	fmt.Printf("Server listening on IP: %s, Port: %d\n", fmt.Sprint(addr.Port), addr.Port)
 
 	go func() {
 		buf := make([]byte, 1024)
