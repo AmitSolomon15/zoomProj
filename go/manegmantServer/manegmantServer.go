@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -332,11 +333,20 @@ func startChatHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	toPort := to["port"]
+	stoPort, ok := toPort.(string)
+	if !ok {
+		fmt.Println("cannot convert port")
+		return
+	}
+	portAsInt, err := strconv.Atoi(stoPort)
+	if err != nil {
+		fmt.Print("convertion error:", err)
+	}
 	toIP := to["ip"]
 	message := r.Form["msg"]
 	joinedMsg := strings.Join(message, "")
 
-	raddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", toIP, toPort))
+	raddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", toIP, portAsInt))
 	if err != nil {
 		log.Println("Resolve error:", err)
 		return
