@@ -322,7 +322,7 @@ func startChatHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(10 << 20)
 	//fromUser := r.FormValue("from")
 	toUser := r.FormValue("to")
-
+	fmt.Println("username" + toUser)
 	collection := client.Database("users").Collection("usersOnLine")
 
 	var to bson.M
