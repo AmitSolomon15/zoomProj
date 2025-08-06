@@ -15,7 +15,7 @@ function SignedInUserPage(){
       const form = new FormData();
       form.append("to",e.innerText)
       form.append("msg",`hello world from ${username}`)
-      axios.post("https://zoomproj-back.onrender.com/connect-user-udp",e.innerText)
+      axios.post("https://zoomproj-back.onrender.com/connect-user-udp",form)
         .then(Response =>{
           console.log(Response.data);
         })
@@ -52,7 +52,7 @@ function SignedInUserPage(){
             {
             let tr = document.createElement("tr");
             let td = document.createElement("td");
-            td.onclick(inviteUser)
+            td.addEventListener("click", inviteUser);
             td.innerText = element;
             tr.appendChild(td);
             tableBody.appendChild(tr);
