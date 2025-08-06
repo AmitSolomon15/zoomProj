@@ -84,13 +84,25 @@ func assignPort() {
 		fmt.Println(err)
 		return
 	}
+	raddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", user.ip, addr.Port))
+	if err != nil {
+		log.Println("Resolve error:", err)
+		return
+	}
+
 	fmt.Println(userOnLineRes)
-	fmt.Printf("Server listening on IP: %s, Port: %d\n", fmt.Sprint(addr.Port), addr.Port)
+	fmt.Printf("Server listening on IP: %s, Port: %d\n", user.ip, addr.Port)
 
 	go func() {
+		conn, err := net.ListenUDP("udp", raddr)
+		if err != nil {
+			log.Println("Dial error:", err)
+			return
+		}
+		defer conn.Close()
 		buf := make([]byte, 1024)
 		for {
-			n, addr, err := listener.ReadFromUDP(buf)
+			n, addr, err := conn.ReadFromUDP(buf)
 			if err != nil {
 				fmt.Printf("Read error: %v", err)
 				fmt.Println("ip: " + user.ip + " port " + fmt.Sprint(addr.Port))
