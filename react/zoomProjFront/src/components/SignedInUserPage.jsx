@@ -14,7 +14,7 @@ function SignedInUserPage(){
     function inviteUser(e){
       console.log(`chk1: ${e.target.innerText}`)
       const form = new FormData();
-      form.append("to",e.innerText)
+      form.append("to",e.target.innerText)
       form.append("msg",`hello world from ${username}`)
       axios.post("https://zoomproj-back.onrender.com/connect-user-udp",form)
         .then(Response =>{
