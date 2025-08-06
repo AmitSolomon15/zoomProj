@@ -12,7 +12,7 @@ function SignedInUserPage(){
 
 
     function inviteUser(e){
-      //console.log(e.innerText)
+      console.log(e)
       const form = new FormData();
       form.append("to",e.innerText)
       form.append("msg",`hello world from ${username}`)
