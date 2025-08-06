@@ -92,7 +92,9 @@ func assignPort() {
 		for {
 			n, addr, err := listener.ReadFromUDP(buf)
 			if err != nil {
-				log.Printf("Read error: %v", err)
+				fmt.Printf("Read error: %v", err)
+				fmt.Println("ip: " + user.ip + " port " + fmt.Sprint(addr.Port))
+
 				continue
 			}
 			fmt.Printf("Received from %s: %s\n", addr.String(), string(buf[:n]))
