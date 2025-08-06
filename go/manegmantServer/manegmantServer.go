@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -19,7 +20,7 @@ import (
 var (
 	client   *mongo.Client
 	ctx      context.Context
-	listener net.Listener
+	listener *net.UDPConn
 	user     mUser
 )
 
@@ -40,6 +41,7 @@ func main() {
 	http.HandleFunc("/submit-data-Sign-In", signInHandler)
 	http.HandleFunc("/disconnect", disconnectHandler)
 	http.HandleFunc("/get-users", getUsers)
+	http.HandleFunc("/connect-user-udp", startChatHandler)
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080" // fallback for local testing
@@ -50,7 +52,7 @@ func main() {
 func assignPort() {
 	var err error
 
-	listener, err = net.Listen("tcp", ":0")
+	listener, err = net.ListenUDP("udp", &net.UDPAddr{Port: 0})
 	if err != nil {
 		log.Fatalf("Error listening: %v", err)
 	}
@@ -61,7 +63,7 @@ func assignPort() {
 	userOnLineCollection := usersDatabase.Collection("usersOnLine")
 	defer listener.Close()
 	// Get the assigned address and port
-	addr := listener.Addr().(*net.TCPAddr)
+	addr := listener.LocalAddr().(*net.UDPAddr)
 	user.port = fmt.Sprint(addr.Port)
 
 	ip, err := getOutboundIP()
@@ -84,6 +86,18 @@ func assignPort() {
 	}
 	fmt.Println(userOnLineRes)
 	fmt.Printf("Server listening on IP: %s, Port: %d\n", addr.IP.String(), addr.Port)
+
+	go func() {
+		buf := make([]byte, 1024)
+		for {
+			n, addr, err := listener.ReadFromUDP(buf)
+			if err != nil {
+				log.Printf("Read error: %v", err)
+				continue
+			}
+			fmt.Printf("Received from %s: %s\n", addr.String(), string(buf[:n]))
+		}
+	}()
 }
 
 func getOutboundIP() (net.IP, error) {
@@ -282,4 +296,44 @@ func getUsers(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte(`{"error":"user not found"}`))
 	}
+}
+
+func startChatHandler(w http.ResponseWriter, r *http.Request) {
+	setCORSHeaders(w)
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	r.ParseMultipartForm(10 << 20)
+	//fromUser := r.FormValue("from")
+	toUser := r.FormValue("to")
+
+	collection := client.Database("users").Collection("usersOnLine")
+
+	var to bson.M
+	if err := collection.FindOne(ctx, bson.M{"username": toUser}).Decode(&to); err != nil {
+		http.Error(w, "User not found", 404)
+		return
+	}
+
+	toPort := to["port"]
+	toIP := to["ip"]
+	message := r.Form["msg"]
+	joinedMsg := strings.Join(message, "")
+
+	raddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", toIP, toPort))
+	if err != nil {
+		log.Println("Resolve error:", err)
+		return
+	}
+
+	conn, err := net.DialUDP("udp", nil, raddr)
+	if err != nil {
+		log.Println("Dial error:", err)
+		return
+	}
+	defer conn.Close()
+
+	conn.Write([]byte(joinedMsg))
 }
