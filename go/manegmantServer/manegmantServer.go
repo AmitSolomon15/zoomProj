@@ -180,8 +180,14 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 	//create collection in the database
 	userCollection := usersDatabase.Collection("users")
 
-	//insert data of 1 object
+	cursor, err := userCollection.Find(ctx, bson.M{"username": user.uName})
+	if err == nil {
+		fmt.Printf("user already exist")
+		return
+	}
+	fmt.Println(cursor)
 
+	//insert data of 1 object
 	userResult, err := userCollection.InsertOne(ctx, bson.D{
 		{Key: "first name", Value: user.fName},
 		{Key: "last name", Value: user.lName},
@@ -218,6 +224,18 @@ func signInHandler(w http.ResponseWriter, r *http.Request) {
 	// Get values from the form
 	user.uName = r.FormValue("uName")
 	user.pass = r.FormValue("pass")
+
+	//creates database
+	usersOnLineDatabase := client.Database("users")
+	//create collection in the database
+	usersOnLineCollection := usersOnLineDatabase.Collection("usersOnLine")
+
+	_, err := usersOnLineCollection.Find(ctx, bson.M{"username": user.uName})
+
+	if err == nil {
+		fmt.Println("user already singed in")
+		return
+	}
 
 	//creates database
 	usersDatabase := client.Database("users")
