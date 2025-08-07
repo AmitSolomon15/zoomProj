@@ -12,7 +12,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/metalblueberry/console"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -51,7 +50,7 @@ func main() {
 	http.ListenAndServe(":"+port, nil)
 }
 
-func assignPort() {
+func assignPort(w http.ResponseWriter) {
 	var err error
 
 	listener, err = net.ListenUDP("udp", &net.UDPAddr{Port: 0})
@@ -111,8 +110,8 @@ func assignPort() {
 
 				continue
 			}
-			console.Log("Received from %s: %s\n", addr.String(), string(buf[:n]))
-
+			fmt.Printf("Received from %s: %s\n", addr.String(), string(buf[:n]))
+			json.NewEncoder(w).Encode(string(buf[:n]))
 		}
 	}()
 }
@@ -248,7 +247,6 @@ func signInHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"error":"user not found"}`))
 	}
 
-	assignPort()
 }
 
 func disconnectHandler(w http.ResponseWriter, r *http.Request) {
@@ -280,6 +278,7 @@ func disconnectHandler(w http.ResponseWriter, r *http.Request) {
 func getUsers(w http.ResponseWriter, r *http.Request) {
 
 	setCORSHeaders(w)
+	assignPort(w)
 
 	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusOK)
