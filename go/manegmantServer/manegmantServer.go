@@ -50,7 +50,7 @@ func main() {
 	http.ListenAndServe(":"+port, nil)
 }
 
-func assignPort(w http.ResponseWriter) {
+func assignPort() {
 	var err error
 
 	listener, err = net.ListenUDP("udp", &net.UDPAddr{Port: 0})
@@ -111,7 +111,6 @@ func assignPort(w http.ResponseWriter) {
 				continue
 			}
 			fmt.Printf("Received from %s: %s\n", addr.String(), string(buf[:n]))
-			json.NewEncoder(w).Encode(string(buf[:n]))
 		}
 	}()
 }
@@ -247,6 +246,7 @@ func signInHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"error":"user not found"}`))
 	}
 
+	assignPort()
 }
 
 func disconnectHandler(w http.ResponseWriter, r *http.Request) {
@@ -278,7 +278,6 @@ func disconnectHandler(w http.ResponseWriter, r *http.Request) {
 func getUsers(w http.ResponseWriter, r *http.Request) {
 
 	setCORSHeaders(w)
-	assignPort(w)
 
 	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusOK)
