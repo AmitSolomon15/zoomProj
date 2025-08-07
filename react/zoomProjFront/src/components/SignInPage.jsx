@@ -7,7 +7,7 @@ function SignInPage(){
     function handleSubmit(e) {
     e.preventDefault();
 
-    console.log("bbbbb");
+    //console.log("bbbbb");
     const form = new FormData(e.target);
 
     axios.post("https://zoomproj-back.onrender.com/submit-data-Sign-In",form)

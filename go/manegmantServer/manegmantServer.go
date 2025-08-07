@@ -85,6 +85,7 @@ func assignPort() {
 		fmt.Println(err)
 		return
 	}
+
 	raddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", user.ip, addr.Port))
 	if err != nil {
 		log.Println("Resolve error:", err)
@@ -113,6 +114,7 @@ func assignPort() {
 			fmt.Printf("Received from %s: %s\n", addr.String(), string(buf[:n]))
 		}
 	}()
+
 }
 
 func getOutboundIP() (net.IP, error) {
