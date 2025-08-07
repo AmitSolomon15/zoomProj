@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/metalblueberry/console"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -110,7 +111,8 @@ func assignPort() {
 
 				continue
 			}
-			fmt.Printf("Received from %s: %s\n", addr.String(), string(buf[:n]))
+			console.Log("Received from %s: %s\n", addr.String(), string(buf[:n]))
+
 		}
 	}()
 }
