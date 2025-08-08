@@ -110,11 +110,13 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 
 	collection := client.Database("users").Collection("usersInCall")
 
+	fmt.Println(sender)
+
 	// Find the call document for the sender
 	filter := bson.M{
 		"$or": []bson.M{
-			{"userA": sender},
-			{"userB": sender},
+			{"user1": sender},
+			{"user2": sender},
 		},
 	}
 
