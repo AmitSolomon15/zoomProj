@@ -1,6 +1,9 @@
 const socket = new WebSocket("https://zoomproj-back-ws.onrender.com/ws");
 const form = new FormData()
-const username = document.querySelector(".name").innerText;
+const username = document.querySelector(".name");
+if(username){
+  const uName = username.innerText;
+}
 form.append("username",username)
 
 function SendDataToSock(){
