@@ -84,7 +84,8 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	username = initData.Username
 	fmt.Printf("User %s connected\n", username)
 
-	clients[username].Conn = conn
+	clients[username] = &Client{Conn: conn}
+
 	fmt.Printf("User %s connected\n", username)
 
 	// Listen for messages
