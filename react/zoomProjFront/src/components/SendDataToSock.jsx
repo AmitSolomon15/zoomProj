@@ -1,4 +1,4 @@
-const socket = new WebSocket("https://zoomproj-back-ws.onrender.com//ws");
+const socket = new WebSocket("https://zoomproj-back-ws.onrender.com/ws");
 
 function SendDataToSock(){
   navigator.mediaDevices.getUserMedia({ video: true, audio: true })
