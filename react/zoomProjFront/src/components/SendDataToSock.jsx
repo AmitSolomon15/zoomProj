@@ -1,7 +1,8 @@
 const socket = new WebSocket("https://zoomproj-back-ws.onrender.com/ws");
-const form = new FormData()
 const username = localStorage.getItem("username");
-form.append("username",username)
+socket.addEventListener("open",()=>{
+  socket.send(JSON.stringify({ type: "username", username }));
+})
 
 function SendDataToSock(){
   navigator.mediaDevices.getUserMedia({ video: true, audio: true })
@@ -11,7 +12,6 @@ function SendDataToSock(){
       recorder.ondataavailable = (event) => {
         if (event.data.size > 0 && socket.readyState === WebSocket.OPEN) {
           socket.send(event.data);
-          socket.send(form)
         }
       };
 

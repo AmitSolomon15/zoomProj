@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -55,8 +56,6 @@ func connectMongo() {
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("ENTERES WSHNADLER")
-	username := r.FormValue("username")
-	fmt.Println("usernam: " + username)
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -65,6 +64,25 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("CONNECTED")
 	defer conn.Close()
+	var username string
+
+	// First message should be JSON with username
+	_, msg, err := conn.ReadMessage()
+	if err != nil {
+		fmt.Println("Error reading username:", err)
+		return
+	}
+
+	var initData struct {
+		Type     string
+		Username string
+	}
+	if err := json.Unmarshal(msg, &initData); err != nil {
+		fmt.Println("JSON parse error:", err)
+		return
+	}
+	username = initData.Username
+	fmt.Printf("User %s connected\n", username)
 
 	clients[username].Conn = conn
 	fmt.Printf("User %s connected\n", username)
