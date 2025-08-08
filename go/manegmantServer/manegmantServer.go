@@ -45,7 +45,7 @@ func main() {
 	http.HandleFunc("/connect-user-udp", startChatHandler)
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080" // fallback for local testing
+		port = "8080"
 	}
 	http.ListenAndServe(":"+port, nil)
 }

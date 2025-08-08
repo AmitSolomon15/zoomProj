@@ -1,5 +1,9 @@
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+
 function SignedInUserPage(){
+  const navigate = useNavigate();
     const username = localStorage.getItem("username");
     console.log(JSON.stringify({ username }));
 
@@ -21,6 +25,7 @@ function SignedInUserPage(){
       axios.post("https://zoomproj-back.onrender.com/connect-user-udp",form)
         .then(Response =>{
           console.log(Response.data);
+          navigate('/MyBtn')
         })
         .catch(error =>{
           console.log(error);

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -30,12 +31,15 @@ var upgrader = websocket.Upgrader{
 }
 
 func main() {
+	connectMongo()
 	http.HandleFunc("/ws", wsHandler)
 	fmt.Println("WebSocket server started on :8080")
-	err := http.ListenAndServe(":8080", nil)
-	if err != nil {
-		fmt.Println("Error starting server:", err)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
 	}
+	http.ListenAndServe(":"+port, nil)
+
 }
 
 func connectMongo() {
@@ -119,7 +123,7 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 	}
 
 	// Forward the media
-	err = receiverConn.WriteMessage(msgType, msg)
+	err = receiverConn.Conn.WriteMessage(msgType, msg)
 	if err != nil {
 		fmt.Println("Error forwarding to", receiver, ":", err)
 	}

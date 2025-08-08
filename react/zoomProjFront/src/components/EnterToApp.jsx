@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import SignUpPage from './SignUpPage.jsx'
 import SignInPage from './SignInPage.jsx'
 import SignedInUserPage from './SignedInUserPage.jsx';
+import MyBtn from './MyBtn.jsx';
 import { useEffect } from 'react';
 
 
@@ -31,6 +32,7 @@ function EnterToApp(){
             <Route path='/SignUpPage' element={<SignUpPage/>}/>
             <Route path='/SignInPage' element={<SignInPage/>}/>
             <Route path='/SignedInUserPage' element={<SignedInUserPage/>}/>
+            <Route path='/MyBtn' element={<MyBtn/>}></Route>
         </Routes>
 
         </>
