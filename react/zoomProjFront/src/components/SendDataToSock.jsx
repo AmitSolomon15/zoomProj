@@ -1,4 +1,4 @@
-const socket = new WebSocket("http://localhost:8080/ws");
+const socket = new WebSocket("ws://localhost:8080/ws");
 
 function SendDataToSock(){
   navigator.mediaDevices.getUserMedia({ video: true, audio: true })

@@ -322,10 +322,12 @@ func startChatHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	r.ParseMultipartForm(10 << 20)
-	//fromUser := r.FormValue("from")
+	fromUser := r.FormValue("from")
 	toUser := r.FormValue("to")
-	fmt.Println("username" + toUser)
+	fmt.Println("username " + toUser)
 	collection := client.Database("users").Collection("usersOnLine")
+
+	sessionCollection := client.Database("users").Collection("usersInCall")
 
 	var to bson.M
 	if err := collection.FindOne(ctx, bson.M{"username": toUser}).Decode(&to); err != nil {
@@ -339,10 +341,12 @@ func startChatHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("cannot convert port")
 		return
 	}
+
 	portAsInt, err := strconv.Atoi(stoPort)
 	if err != nil {
 		fmt.Print("convertion error:", err)
 	}
+
 	toIP := to["ip"]
 	message := r.Form["msg"]
 	joinedMsg := strings.Join(message, "")
@@ -352,6 +356,11 @@ func startChatHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Resolve error:", err)
 		return
 	}
+
+	sessionCollection.InsertOne(ctx, bson.M{
+		"user1": fromUser,
+		"user2": toUser,
+	})
 
 	conn, err := net.DialUDP("udp", nil, raddr)
 	if err != nil {
