@@ -54,6 +54,7 @@ func connectMongo() {
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("ENTERES WSHNADLER")
 	username := r.FormValue("username")
 
 	conn, err := upgrader.Upgrade(w, r, nil)
@@ -61,6 +62,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error upgrading:", err)
 		return
 	}
+	fmt.Println("CONNECTED")
 	defer conn.Close()
 
 	clients[username].Conn = conn
