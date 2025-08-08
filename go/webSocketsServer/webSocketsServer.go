@@ -56,6 +56,7 @@ func connectMongo() {
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("ENTERES WSHNADLER")
 	username := r.FormValue("username")
+	fmt.Println("usernam: " + username)
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
