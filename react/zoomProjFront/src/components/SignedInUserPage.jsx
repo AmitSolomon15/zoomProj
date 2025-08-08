@@ -19,6 +19,7 @@ function SignedInUserPage(){
       console.log(`chk1: ${e.target.innerText}`)
       const form = new FormData();
       const username = document.querySelector(".name").innerText;
+      localStorage.setItem("username",username)
       form.append("from",username)
       form.append("to",e.target.innerText)
       form.append("msg",`hello world from ${username}`)
