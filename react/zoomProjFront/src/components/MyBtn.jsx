@@ -1,4 +1,4 @@
-import SendDataToSock from "./SendDataToSock";
+import SendDataToSock from "./SendDataToSock.jsx";
 const username = localStorage.getItem("nUsername");
 //const username2 = localStorage.getItem("nUsername2");
 

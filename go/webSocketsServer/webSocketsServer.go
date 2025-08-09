@@ -84,7 +84,7 @@ func wsConnectHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	username = initData.Username
-	fmt.Printf("User %s connected\n", username)
+	//fmt.Printf("User %s connected\n", username)
 
 	clients[username] = &Client{Conn: conn}
 
