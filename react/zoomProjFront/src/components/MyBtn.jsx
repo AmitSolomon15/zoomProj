@@ -1,5 +1,7 @@
 import SendDataToSock from "./SendDataToSock";
 const username = localStorage.getItem("nUsername");
+//const username2 = localStorage.getItem("nUsername2");
+
 function MyBtn(){
     return(
       <div>

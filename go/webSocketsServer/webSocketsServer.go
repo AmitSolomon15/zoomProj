@@ -144,14 +144,15 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 	}
 
 	// Check if receiver is connected
-	receiverConn, ok := clients[receiver]
-	if !ok {
+
+	if clients[receiver] == nil {
 		fmt.Println("Receiver not connected:", receiver)
 		return
 	}
+	receiverConn := clients[receiver].Conn
 
 	// Forward the media
-	err = receiverConn.Conn.WriteMessage(msgType, msg)
+	err = receiverConn.WriteMessage(msgType, msg)
 	if err != nil {
 		fmt.Println("Error forwarding to", receiver, ":", err)
 	}

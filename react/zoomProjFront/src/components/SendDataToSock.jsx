@@ -1,5 +1,5 @@
 const socket = new WebSocket("https://zoomproj-back-ws.onrender.com/ws");
-const username = localStorage.getItem("username");
+const username = localStorage.getItem("nUsername");
 socket.addEventListener("open",()=>{
   socket.send(JSON.stringify({ type: "username", username }));
 })

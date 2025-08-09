@@ -21,6 +21,7 @@ function SignedInUserPage(){
       const username = document.querySelector(".name").innerText;
       console.log(username);
       localStorage.setItem("nUsername",username);
+      localStorage.setItem("nUsername2",e.target.innerText);
       form.append("from",username);
       form.append("to",e.target.innerText);
       form.append("msg",`hello world from ${username}`);
