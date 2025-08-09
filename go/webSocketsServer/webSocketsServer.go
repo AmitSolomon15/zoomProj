@@ -121,8 +121,8 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 	}
 
 	var result struct {
-		UserA string
-		UserB string
+		User1 string
+		User2 string
 	}
 
 	err := collection.FindOne(ctx, filter).Decode(&result)
@@ -130,16 +130,17 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 		fmt.Println("No call found for user:", sender)
 		return
 	}
+
 	fmt.Println("result: ", result)
-	fmt.Println("result2: ", result.UserA)
-	fmt.Println("result3: ", result.UserB)
+	fmt.Println("result2: ", result.User1)
+	fmt.Println("result3: ", result.User2)
 
 	// Determine the receiver
 	var receiver string
-	if result.UserA == sender {
-		receiver = result.UserB
+	if result.User1 == sender {
+		receiver = result.User2
 	} else {
-		receiver = result.UserA
+		receiver = result.User1
 	}
 
 	// Check if receiver is connected
