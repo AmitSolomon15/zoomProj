@@ -7,9 +7,8 @@ function SendDataToSock(){
   
     
   const username = localStorage.getItem("nUsername");
-  socket.addEventListener("open",() =>{
-    socket.send(JSON.stringify({username}));
-  });
+  
+  socket.send(JSON.stringify({username}));
   
   console.log("IM HERE2");
   navigator.mediaDevices.getUserMedia({ video: true, audio: true })
