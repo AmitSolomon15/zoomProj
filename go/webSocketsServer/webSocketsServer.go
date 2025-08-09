@@ -90,6 +90,7 @@ func wsConnectHandler(w http.ResponseWriter, r *http.Request) {
 	clients[username] = &Client{Conn: conn}
 
 	fmt.Printf("User %s connected\n", username)
+	fmt.Println(conn)
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
