@@ -3,6 +3,7 @@ import axios from "axios";
 
 
 function SendDataToSock(){
+  console.log("IM HERE1");
   function init(){
     const socket = new WebSocket("wss://zoomproj-back-ws.onrender.com/ws");
     const username = localStorage.getItem("nUsername");
@@ -11,8 +12,10 @@ function SendDataToSock(){
     });
   }
   init();
+  console.log("IM HERE2");
   navigator.mediaDevices.getUserMedia({ video: true, audio: true })
     .then(stream => {
+      console.log("IM HERE3");
       const recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
 
       recorder.ondataavailable = (event) => {

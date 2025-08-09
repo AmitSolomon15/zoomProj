@@ -35,7 +35,7 @@ func main() {
 	connectMongo()
 	http.HandleFunc("/ws", wsHandler)
 	http.HandleFunc("/wsConn", wsConnectHandler)
-	fmt.Println("WebSocket server started on :8080")
+	//fmt.Println("WebSocket server started on :8080")
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
