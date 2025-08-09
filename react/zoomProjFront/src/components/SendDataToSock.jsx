@@ -1,10 +1,10 @@
 import axios from "axios";
 
-const socket = new WebSocket("https://zoomproj-back-ws.onrender.com/ws");
+const socket = new WebSocket("wss://zoomproj-back-ws.onrender.com/ws");
 const username = localStorage.getItem("nUsername");
 const form = new FormData();
 form.append("user",username);
-axios.post("https://zoomproj-back-ws.onrender.com/ws",form)
+axios.post("wss://zoomproj-back-ws.onrender.com/ws",form)
   .then(Response =>{
     console.log("Success");
   })

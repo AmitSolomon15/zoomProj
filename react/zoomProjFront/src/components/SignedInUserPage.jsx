@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 function SignedInUserPage(){
   const navigate = useNavigate();
     const username = localStorage.getItem("username");
-    const socket = new WebSocket("https://zoomproj-back-ws.onrender.com/wsConn");
+    const socket = new WebSocket("wss://zoomproj-back-ws.onrender.com/wsConn");
     socket.addEventListener("open",() =>{
       socket.send(username);
     })
