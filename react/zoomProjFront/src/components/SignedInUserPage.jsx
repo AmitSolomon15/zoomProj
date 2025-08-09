@@ -5,6 +5,17 @@ import { useNavigate } from "react-router-dom";
 function SignedInUserPage(){
   const navigate = useNavigate();
     const username = localStorage.getItem("username");
+    const initForm = new FormData();
+    initForm.append("user",username);
+    axios.post("https://zoomproj-back-ws.onrender.com/wsConn",initForm)
+      .then(Response =>{
+        console.log("succes");
+      })
+      .catch(error =>{
+          console.log(error);
+      })
+
+
     console.log(JSON.stringify({ username }));
 
     const tableStyle = {

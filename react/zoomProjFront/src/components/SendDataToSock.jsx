@@ -1,8 +1,16 @@
+import axios from "axios";
+
 const socket = new WebSocket("https://zoomproj-back-ws.onrender.com/ws");
 const username = localStorage.getItem("nUsername");
-socket.addEventListener("open",()=>{
-  socket.send(JSON.stringify({ type: "username", username }));
-})
+const form = new FormData();
+form.append("user",username);
+axios.post("https://zoomproj-back-ws.onrender.com/ws",form)
+  .then(Response =>{
+    console.log("Success");
+  })
+  .catch(error =>{
+          console.log(error);
+  })
 
 function SendDataToSock(){
   navigator.mediaDevices.getUserMedia({ video: true, audio: true })

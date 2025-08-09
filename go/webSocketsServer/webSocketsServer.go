@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"encoding/json"
+	//"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -34,6 +34,7 @@ var upgrader = websocket.Upgrader{
 func main() {
 	connectMongo()
 	http.HandleFunc("/ws", wsHandler)
+	http.HandleFunc("/wsConn", wsConnectHandler)
 	fmt.Println("WebSocket server started on :8080")
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -53,9 +54,8 @@ func connectMongo() {
 		panic(err)
 	}
 }
-
-func wsHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("ENTERES WSHNADLER")
+func wsConnectHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("ENTERES WS connect HNADLER")
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -64,27 +64,45 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("CONNECTED")
 	defer conn.Close()
-	var username string
 
 	// First message should be JSON with username
-	_, msg, err := conn.ReadMessage()
-	if err != nil {
-		fmt.Println("Error reading username:", err)
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
 		return
 	}
 
-	var initData struct {
-		Type     string
-		Username string
-	}
-	if err := json.Unmarshal(msg, &initData); err != nil {
-		fmt.Println("JSON parse error:", err)
+	// Parse the form data
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		http.Error(w, "Error parsing form", http.StatusInternalServerError)
 		return
 	}
-	username = initData.Username
+
+	username := r.FormValue("user")
 	fmt.Printf("User %s connected\n", username)
 
 	clients[username] = &Client{Conn: conn}
+
+	fmt.Printf("User %s connected\n", username)
+}
+
+func wsHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("ENTERES WSHNADLER")
+
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	// Parse the form data
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		http.Error(w, "Error parsing form", http.StatusInternalServerError)
+		return
+	}
+
+	username := r.FormValue("user")
+	fmt.Printf("User %s connected\n", username)
+
+	conn := clients[username].Conn
 
 	fmt.Printf("User %s connected\n", username)
 
