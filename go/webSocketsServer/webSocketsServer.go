@@ -130,6 +130,9 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 		fmt.Println("No call found for user:", sender)
 		return
 	}
+	fmt.Println("result: ", result)
+	fmt.Println("result2: ", result.UserA)
+	fmt.Println("result3: ", result.UserB)
 
 	// Determine the receiver
 	var receiver string
