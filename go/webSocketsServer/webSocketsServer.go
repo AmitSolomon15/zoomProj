@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	//"encoding/json"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -64,20 +64,24 @@ func wsConnectHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("CONNECTED")
 	defer conn.Close()
+	var username string
 
 	// First message should be JSON with username
-	if r.Method == http.MethodOptions {
-		w.WriteHeader(http.StatusOK)
+	_, msg, err := conn.ReadMessage()
+	if err != nil {
+		fmt.Println("Error reading username:", err)
 		return
 	}
 
-	// Parse the form data
-	if err := r.ParseMultipartForm(10 << 20); err != nil {
-		http.Error(w, "Error parsing form", http.StatusInternalServerError)
+	var initData struct {
+		Type     string
+		Username string
+	}
+	if err := json.Unmarshal(msg, &initData); err != nil {
+		fmt.Println("JSON parse error:", err)
 		return
 	}
-
-	username := r.FormValue("user")
+	username = initData.Username
 	fmt.Printf("User %s connected\n", username)
 
 	clients[username] = &Client{Conn: conn}
