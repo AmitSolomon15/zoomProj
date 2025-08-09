@@ -72,6 +72,7 @@ func wsConnectHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error reading username:", err)
 		return
 	}
+	fmt.Println(string(msg))
 
 	var initData struct {
 		Type     string
@@ -100,6 +101,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer conn.Close()
+	fmt.Println("CONNECTED")
 
 	// Step 1: First message is JSON with username
 	_, msg, err := conn.ReadMessage()
@@ -108,6 +110,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println(string(msg))
 	var initData struct {
 		Type     string
 		Username string
