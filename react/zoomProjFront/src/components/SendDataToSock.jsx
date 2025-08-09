@@ -1,11 +1,11 @@
 import axios from "axios";
 
 
-
+const socket = new WebSocket("wss://zoomproj-back-ws.onrender.com/ws");
 function SendDataToSock(){
   console.log("IM HERE1");
   function init(){
-    const socket = new WebSocket("wss://zoomproj-back-ws.onrender.com/ws");
+    
     const username = localStorage.getItem("nUsername");
     socket.addEventListener("open",() =>{
       socket.send(JSON.stringify({username}));

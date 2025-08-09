@@ -108,13 +108,17 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var username string
-	if err := json.Unmarshal(msg, &username); err != nil {
+	var initData struct {
+		Type     string
+		Username string
+	}
+
+	if err := json.Unmarshal(msg, &initData); err != nil {
 		fmt.Println("JSON parse error:", err)
 		return
 	}
 
-	fmt.Printf("User %s connected\n", username)
+	username := initData.Username
 
 	conn = clients[username].Conn
 
