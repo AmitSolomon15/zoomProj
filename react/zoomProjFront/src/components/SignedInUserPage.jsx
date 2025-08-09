@@ -9,7 +9,7 @@ function SignedInUserPage(){
     const socket = new WebSocket("wss://zoomproj-back-ws.onrender.com/wsConn");
     socket.addEventListener("open",() =>{
       socket.send(JSON.stringify({username}));
-    })
+    });
     
     
 

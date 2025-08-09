@@ -94,21 +94,29 @@ func wsConnectHandler(w http.ResponseWriter, r *http.Request) {
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("ENTERES WSHNADLER")
 
-	if r.Method == http.MethodOptions {
-		w.WriteHeader(http.StatusOK)
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		fmt.Println("Error upgrading:", err)
+		return
+	}
+	defer conn.Close()
+
+	// Step 1: First message is JSON with username
+	_, msg, err := conn.ReadMessage()
+	if err != nil {
+		fmt.Println("Error reading username:", err)
 		return
 	}
 
-	// Parse the form data
-	if err := r.ParseMultipartForm(10 << 20); err != nil {
-		http.Error(w, "Error parsing form", http.StatusInternalServerError)
+	var username string
+	if err := json.Unmarshal(msg, &username); err != nil {
+		fmt.Println("JSON parse error:", err)
 		return
 	}
 
-	username := r.FormValue("user")
 	fmt.Printf("User %s connected\n", username)
 
-	conn := clients[username].Conn
+	conn = clients[username].Conn
 
 	fmt.Printf("User %s connected\n", username)
 
