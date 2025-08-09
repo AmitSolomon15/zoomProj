@@ -131,7 +131,13 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	for {
 		msgType, msg, err := conn.ReadMessage()
 		if err != nil {
-			fmt.Println("Read error:", err)
+			if websocket.IsCloseError(err,
+				websocket.CloseGoingAway,
+				websocket.CloseNormalClosure) {
+				fmt.Println("Client disconnected normally:", username)
+			} else {
+				fmt.Println("Read error:", err)
+			}
 			break
 		}
 
