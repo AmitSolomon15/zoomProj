@@ -7,7 +7,10 @@ function SignedInUserPage(){
     const username = localStorage.getItem("username");
     const socket = new WebSocket("wss://zoomproj-back-ws.onrender.com/wsConn");
     socket.addEventListener("open",() =>{
-      socket.send(JSON.stringify(username));
+      socket.send(JSON.stringify({
+        Type:"username",
+        Username: username
+      }));
     })
     
     
