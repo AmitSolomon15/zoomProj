@@ -63,7 +63,7 @@ func wsConnectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Println("CONNECTED")
-	defer conn.Close()
+	//defer conn.Close()
 	var username string
 
 	// First message should be JSON with username
@@ -102,7 +102,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error upgrading:", err)
 		return
 	}
-	defer conn.Close()
+	//defer conn.Close()
 	fmt.Println("CONNECTED")
 
 	// Step 1: First message is JSON with username
@@ -154,6 +154,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+	defer clients[sender].Conn.Close()
 
 	collection := client.Database("users").Collection("usersInCall")
 
@@ -203,4 +204,5 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 	if err != nil {
 		fmt.Println("Error forwarding to", receiver, ":", err)
 	}
+
 }
