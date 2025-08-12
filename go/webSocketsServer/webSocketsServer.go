@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -106,18 +107,13 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("CONNECTED")
 
 	// Step 1: First message is JSON with username
-	for {
-		_, msg, err := conn.ReadMessage()
-		if err != nil {
-			fmt.Println("Error reading username:", err)
-			return
-		}
-		fmt.Println(string(msg))
+	_, msg, err := conn.ReadMessage()
+	if err != nil {
+		fmt.Println("Error reading username:", err)
+		return
 	}
-}
 
-/*
-
+	fmt.Println(string(msg))
 	var initData struct {
 		Type     string
 		Username string
@@ -210,4 +206,3 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 	}
 
 }
-*/
