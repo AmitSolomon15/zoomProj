@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import SendDataToSock from "./SendDataToSock.jsx";
 
 function SignedInUserPage(){
   const navigate = useNavigate();
@@ -37,7 +37,11 @@ function SignedInUserPage(){
       axios.post("https://zoomproj-back.onrender.com/connect-user-udp",form)
         .then(Response =>{
           console.log(Response.data);
-          navigate('/MyBtn')
+          //navigate('/MyBtn')
+          const table = document.querySelector("table");
+          document.body.remove(table);
+          const buttn = document.querySelector("button");
+          buttn.addEventListener("click",SendDataToSock)
         })
         .catch(error =>{
           console.log(error);
