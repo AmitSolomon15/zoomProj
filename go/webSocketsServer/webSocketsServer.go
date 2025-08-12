@@ -107,13 +107,14 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("CONNECTED")
 
 	// Step 1: First message is JSON with username
-	_, msg, err := conn.ReadMessage()
+	msgType, msg, err := conn.ReadMessage()
 	if err != nil {
 		fmt.Println("Error reading username:", err)
 		return
 	}
 
 	fmt.Println(string(msg))
+	fmt.Println("msgType: ", msgType)
 	var initData struct {
 		Type     string
 		Username string
