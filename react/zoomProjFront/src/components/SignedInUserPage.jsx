@@ -54,6 +54,7 @@ function SignedInUserPage(){
       if (buttn) {
         clearInterval(checkBtn); // stop checking
         buttn.addEventListener("click", SendDataToSock);
+        console.log(buttn);
       }
     }, 50); // check every 50ms
   }
