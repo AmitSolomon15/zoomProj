@@ -130,8 +130,6 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("User %s connected\n", username)
 
-	_, msg, err = conn.ReadMessage()
-	fmt.Println("msg recived is: ", string(msg))
 	// Listen for messages
 	for {
 		fmt.Println("ENTERED THe LOOP")
