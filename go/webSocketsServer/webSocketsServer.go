@@ -32,6 +32,7 @@ var upgrader = websocket.Upgrader{
 }
 
 func main() {
+	fmt.Println("ENTERED MAIN")
 	connectMongo()
 	http.HandleFunc("/ws", wsHandler)
 	http.HandleFunc("/wsConn", wsConnectHandler)
