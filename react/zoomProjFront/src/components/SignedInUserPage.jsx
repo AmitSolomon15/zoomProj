@@ -44,7 +44,7 @@ function SignedInUserPage(){
           const buttn = document.querySelector(".btn");
           console.log(buttn);
           buttn.addEventListener("click",SendDataToSock);
-          button.innerText = "start call";
+          buttn.innerText = "start call";
         })
         .catch(error =>{
           console.log(error);

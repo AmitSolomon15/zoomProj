@@ -134,14 +134,9 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	for {
 		fmt.Println("ENTERED THe LOOP")
 		msgType, msg, err := conn.ReadMessage()
+		fmt.Println("msg recived is: ", msg)
 		if err != nil {
-			if websocket.IsCloseError(err,
-				websocket.CloseGoingAway,
-				websocket.CloseNormalClosure) {
-				fmt.Println("Client disconnected normally:", username)
-			} else {
-				fmt.Println("Read error:", err)
-			}
+			fmt.Println("Read error:", err)
 			fmt.Println("BREAKING")
 			break
 		}
