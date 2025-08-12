@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import SendDataToSock from "./SendDataToSock.jsx";
 
 function SignedInUserPage(){
-  const navigate = useNavigate();
+    const isClicked = false;
     const username = localStorage.getItem("username");
 
     const socket = new WebSocket("wss://zoomproj-back-ws.onrender.com/wsConn");
@@ -43,8 +43,10 @@ function SignedInUserPage(){
           table.innerHTML = "";
           const buttn = document.querySelector(".btn");
           console.log(buttn);
-          buttn.addEventListener("click",SendDataToSock);
+          buttn.remo
+          //buttn.addEventListener("click",SendDataToSock);
           buttn.innerText = "start call";
+          isClicked = true;
         })
         .catch(error =>{
           console.log(error);
@@ -105,7 +107,7 @@ function SignedInUserPage(){
       <div style={{ color: "white", fontSize: "20px",position: "absolute", top: 0,left: "10px" }} className="name">
         {`${username}`}
       </div>
-      <button onClick={getUsers} className="btn">show all users</button>
+      <button onClick={!isClicked?getUsers:SendDataToSock} className="btn">show all users</button>
       </div>
         );
 }
