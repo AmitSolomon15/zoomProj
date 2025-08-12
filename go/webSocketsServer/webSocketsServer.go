@@ -131,6 +131,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Listen for messages
 	for {
+		fmt.Println("ENTERED THe LOOP")
 		msgType, msg, err := conn.ReadMessage()
 		if err != nil {
 			if websocket.IsCloseError(err,
@@ -140,14 +141,17 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			} else {
 				fmt.Println("Read error:", err)
 			}
+			fmt.Println("BREAKING")
 			break
 		}
 
 		// Handle media forwarding
+		fmt.Println("GOING FPRWORD")
 		forwardMediaToPeer(username, msgType, msg)
 	}
 
 	// Clean up on disconnect
+	fmt.Println("DELETING")
 	delete(clients, username)
 }
 
