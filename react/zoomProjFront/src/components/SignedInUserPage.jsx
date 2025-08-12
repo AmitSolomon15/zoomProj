@@ -39,7 +39,10 @@ function SignedInUserPage(){
           console.log(Response.data);
           //navigate('/MyBtn')
           const table = document.querySelector("table");
-          document.body.remove(table);
+          table.innerHTML = "";
+          const buttn = document.querySelector(".btn");
+          console.log(buttn);
+          buttn.addEventListener("click",SendDataToSock);
         })
         .catch(error =>{
           console.log(error);
@@ -48,6 +51,7 @@ function SignedInUserPage(){
 
 
     
+
     window.addEventListener("beforeunload", function () {
       const username = document.querySelector(".name").innerText;
 
