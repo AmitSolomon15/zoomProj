@@ -40,7 +40,7 @@ function SignedInUserPage(){
           //navigate('/MyBtn')
           const table = document.querySelector("table");
           document.body.remove(table);
-          const buttn = document.querySelector("button");
+          const buttn = document.querySelector(".btn");
           console.log(buttn);
           buttn.addEventListener("click",SendDataToSock);
         })
@@ -100,7 +100,7 @@ function SignedInUserPage(){
       <div style={{ color: "white", fontSize: "20px",position: "absolute", top: 0,left: "10px" }} className="name">
         {`${username}`}
       </div>
-      <button onClick={getUsers}>show all users</button>
+      <button onClick={getUsers} className="btn">show all users</button>
       </div>
         );
 }
