@@ -41,7 +41,8 @@ function SignedInUserPage(){
           const table = document.querySelector("table");
           document.body.remove(table);
           const buttn = document.querySelector("button");
-          buttn.addEventListener("click",SendDataToSock)
+          console.log(buttn);
+          buttn.addEventListener("click",SendDataToSock);
         })
         .catch(error =>{
           console.log(error);
