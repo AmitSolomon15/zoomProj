@@ -40,7 +40,6 @@ function SignedInUserPage(){
           //navigate('/MyBtn')
           const table = document.querySelector("table");
           document.body.remove(table);
-          waitForButtonToRender();
         })
         .catch(error =>{
           console.log(error);
@@ -48,17 +47,7 @@ function SignedInUserPage(){
     }
 
 
-    function waitForButtonToRender() {
-    const checkBtn = setInterval(() => {
-      const buttn = document.querySelector(".btn");
-      if (buttn) {
-        clearInterval(checkBtn); // stop checking
-        buttn.addEventListener("click", SendDataToSock);
-        console.log(buttn);
-      }
-    }, 50); // check every 50ms
-  }
-
+    
     window.addEventListener("beforeunload", function () {
       const username = document.querySelector(".name").innerText;
 
