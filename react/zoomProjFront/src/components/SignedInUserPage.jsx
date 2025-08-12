@@ -9,6 +9,7 @@ function SignedInUserPage(){
     const socket = new WebSocket("wss://zoomproj-back-ws.onrender.com/wsConn");
     socket.addEventListener("open",() =>{
       socket.send(JSON.stringify({username}));
+      console.log("CONNECTED");
     });
     
     
@@ -43,6 +44,7 @@ function SignedInUserPage(){
           const buttn = document.querySelector(".btn");
           console.log(buttn);
           buttn.addEventListener("click",SendDataToSock);
+          button.innerText = "start call";
         })
         .catch(error =>{
           console.log(error);
