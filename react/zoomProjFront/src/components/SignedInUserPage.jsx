@@ -71,6 +71,7 @@ function SignedInUserPage(){
 
 
     function getUsers() {
+    console.log("cliked ",isClicked);
    
     axios.post("https://zoomproj-back.onrender.com/get-users")
       .then(response => {
