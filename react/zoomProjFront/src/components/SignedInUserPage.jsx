@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import SendDataToSock from "./SendDataToSock.jsx";
 
 function SignedInUserPage(){
-    const isClicked = false;
+    var isClicked = false;
     const username = localStorage.getItem("username");
 
     /*
