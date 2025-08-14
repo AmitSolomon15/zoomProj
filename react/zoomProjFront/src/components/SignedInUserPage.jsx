@@ -6,12 +6,13 @@ function SignedInUserPage(){
     const isClicked = false;
     const username = localStorage.getItem("username");
 
+    /*
     const socket = new WebSocket("wss://zoomproj-back-ws.onrender.com/wsConn");
     socket.addEventListener("open",() =>{
       socket.send(JSON.stringify({username}));
       console.log("CONNECTED");
     });
-    
+    */
     
 
 
@@ -43,7 +44,6 @@ function SignedInUserPage(){
           table.innerHTML = "";
           const buttn = document.querySelector(".btn");
           console.log(buttn);
-          buttn.remo
           //buttn.addEventListener("click",SendDataToSock);
           buttn.innerText = "start call";
           isClicked = true;
@@ -107,7 +107,7 @@ function SignedInUserPage(){
       <div style={{ color: "white", fontSize: "20px",position: "absolute", top: 0,left: "10px" }} className="name">
         {`${username}`}
       </div>
-      <button onClick={!isClicked?getUsers:SendDataToSock} className="btn">show all users</button>
+      <button onClick={() => {!isClicked?getUsers:SendDataToSock}} className="btn">show all users</button>
       </div>
         );
 }

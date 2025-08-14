@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"encoding/json"
+	//"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -36,7 +36,7 @@ func main() {
 	fmt.Println("ENTERED MAIN")
 	connectMongo()
 	http.HandleFunc("/ws", wsHandler)
-	http.HandleFunc("/wsConn", wsConnectHandler)
+	//http.HandleFunc("/wsConn", wsConnectHandler)
 	//fmt.Println("WebSocket server started on :8080")
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -56,6 +56,8 @@ func connectMongo() {
 		panic(err)
 	}
 }
+
+/*
 func wsConnectHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("ENTERES WS connect HNADLER")
 
@@ -94,7 +96,7 @@ func wsConnectHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("User %s connected\n", username)
 	fmt.Println(conn.LocalAddr())
 	fmt.Println(conn.RemoteAddr())
-}
+}*/
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("ENTERES WSHNADLER")
@@ -135,7 +137,7 @@ func connectWS(w http.ResponseWriter, r *http.Request) (string, *websocket.Conn)
 
 	username := r.URL.Query().Get("username")
 
-	clients[username].Conn = conn
+	clients[username] = &Client{Conn: conn}
 	return username, conn
 }
 
