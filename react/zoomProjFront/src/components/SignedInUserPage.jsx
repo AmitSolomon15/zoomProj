@@ -46,7 +46,9 @@ function SignedInUserPage(){
           console.log(buttn);
           //buttn.addEventListener("click",SendDataToSock);
           buttn.innerText = "start call";
+          console.log(`i clicked? ${isClicked}` );
           isClicked = true;
+          console.log(`i clicked? ${isClicked}` );
         })
         .catch(error =>{
           console.log(error);
