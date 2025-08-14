@@ -1,14 +1,13 @@
 import axios from "axios";
 
 
-const socket = new WebSocket("wss://zoomproj-back-ws.onrender.com/ws");
+
 function SendDataToSock(){
   console.log("IM HERE1");
   
     
   const username = localStorage.getItem("nUsername");
-  
-  socket.send(JSON.stringify({username}));
+  const socket = new WebSocket(`wss://zoomproj-back-ws.onrender.com/ws?username=${username}`);
   
   console.log("IM HERE2");
   navigator.mediaDevices.getUserMedia({ video: true, audio: true })

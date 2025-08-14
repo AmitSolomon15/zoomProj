@@ -123,6 +123,22 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	delete(clients, username)
 }
 
+func connectWS(w http.ResponseWriter, r *http.Request) (string, *websocket.Conn) {
+
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		fmt.Println("Error upgrading:", err)
+		return "", nil
+	}
+	//defer conn.Close()
+	fmt.Println("CONNECTED")
+
+	username := r.URL.Query().Get("username")
+
+	clients[username].Conn = conn
+	return username, conn
+}
+
 func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -177,39 +193,4 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 		fmt.Println("Error forwarding to", receiver, ":", err)
 	}
 
-}
-
-func connectWS(w http.ResponseWriter, r *http.Request) (string, *websocket.Conn) {
-
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		fmt.Println("Error upgrading:", err)
-		return "", nil
-	}
-	//defer conn.Close()
-	fmt.Println("CONNECTED")
-
-	// Step 1: First message is JSON with username
-	typem, msg, err := conn.ReadMessage()
-	if err != nil {
-		fmt.Println("Error reading username:", err)
-		return "", nil
-	}
-
-	fmt.Println(string(msg))
-	fmt.Println("type is: ", typem)
-	var initData struct {
-		Type     string
-		Username string
-	}
-
-	if err := json.Unmarshal(msg, &initData); err != nil {
-		fmt.Println("JSON parse error:", err)
-		return "", nil
-	}
-
-	username := initData.Username
-
-	clients[username].Conn = conn
-	return username, conn
 }
