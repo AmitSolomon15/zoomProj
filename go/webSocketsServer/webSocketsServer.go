@@ -20,8 +20,9 @@ type Client struct {
 }
 
 var (
-	clients = make(map[string]*Client)
-	client  *mongo.Client
+	clients          = make(map[string]*Client)
+	clientsConnected = make(map[string]bool)
+	client           *mongo.Client
 )
 
 // Upgrader is used to upgrade HTTP connections to WebSocket connections.
@@ -98,37 +99,7 @@ func wsConnectHandler(w http.ResponseWriter, r *http.Request) {
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("ENTERES WSHNADLER")
 
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		fmt.Println("Error upgrading:", err)
-		return
-	}
-	//defer conn.Close()
-	fmt.Println("CONNECTED")
-
-	// Step 1: First message is JSON with username
-	msgType, msg, err := conn.ReadMessage()
-	if err != nil {
-		fmt.Println("Error reading username:", err)
-		return
-	}
-
-	fmt.Println(string(msg))
-	fmt.Println("msgType: ", msgType)
-	var initData struct {
-		Type     string
-		Username string
-	}
-
-	if err := json.Unmarshal(msg, &initData); err != nil {
-		fmt.Println("JSON parse error:", err)
-		return
-	}
-
-	username := initData.Username
-
-	clients[username].Conn = conn
-
+	username, conn := connectWS(w, r)
 	fmt.Printf("User %s connected\n", username)
 
 	// Listen for messages
@@ -206,4 +177,39 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 		fmt.Println("Error forwarding to", receiver, ":", err)
 	}
 
+}
+
+func connectWS(w http.ResponseWriter, r *http.Request) (string, *websocket.Conn) {
+
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		fmt.Println("Error upgrading:", err)
+		return "", nil
+	}
+	//defer conn.Close()
+	fmt.Println("CONNECTED")
+
+	// Step 1: First message is JSON with username
+	typem, msg, err := conn.ReadMessage()
+	if err != nil {
+		fmt.Println("Error reading username:", err)
+		return "", nil
+	}
+
+	fmt.Println(string(msg))
+	fmt.Println("type is: ", typem)
+	var initData struct {
+		Type     string
+		Username string
+	}
+
+	if err := json.Unmarshal(msg, &initData); err != nil {
+		fmt.Println("JSON parse error:", err)
+		return "", nil
+	}
+
+	username := initData.Username
+
+	clients[username].Conn = conn
+	return username, conn
 }
