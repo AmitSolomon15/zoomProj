@@ -20,9 +20,9 @@ type Client struct {
 }
 
 var (
-	clients          = make(map[string]*Client)
-	clientsConnected = make(map[string]bool)
-	client           *mongo.Client
+	clients = make(map[string]*Client)
+	//clientsConnected = make(map[string]bool)
+	client *mongo.Client
 )
 
 // Upgrader is used to upgrade HTTP connections to WebSocket connections.
@@ -107,6 +107,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	// Listen for messages
 	for {
 		fmt.Println("ENTERED THe LOOP")
+		time.Sleep(time.Second)
 		msgType, msg, err := conn.ReadMessage()
 		fmt.Println("msg recived is: ", string(msg))
 		if err != nil {
