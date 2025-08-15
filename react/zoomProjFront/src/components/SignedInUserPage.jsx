@@ -103,6 +103,14 @@ function SignedInUserPage(){
         console.error("Error:", error);
         });
 
+    }
+    function decideFunc(params) {
+      if(!isClicked){
+        getUsers();
+      }
+      else{
+        SendDataToSock;
+      }
     }   
 
     return(
@@ -110,7 +118,7 @@ function SignedInUserPage(){
       <div style={{ color: "white", fontSize: "20px",position: "absolute", top: 0,left: "10px" }} className="name">
         {`${username}`}
       </div>
-      <button onClick={!isClicked?getUsers:SendDataToSock} className="btn">show all users</button>
+      <button onClick={decideFunc} className="btn">show all users</button>
       </div>
         );
 }
