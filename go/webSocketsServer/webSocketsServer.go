@@ -139,6 +139,7 @@ func connectWS(w http.ResponseWriter, r *http.Request) (string, *websocket.Conn)
 	username := r.URL.Query().Get("username")
 
 	clients[username] = &Client{Conn: conn}
+
 	return username, conn
 }
 
@@ -146,7 +147,6 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	//defer clients[sender].Conn.Close()
-
 	collection := client.Database("users").Collection("usersInCall")
 
 	fmt.Println(sender)
@@ -184,6 +184,7 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 
 	// Check if receiver is connected
 
+	fmt.Println("user ", receiver, " connection: ", clients[receiver].Conn)
 	if clients[receiver] == nil {
 		fmt.Println("Receiver not connected:", receiver)
 		return
