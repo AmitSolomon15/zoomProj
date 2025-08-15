@@ -184,7 +184,7 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 
 	// Check if receiver is connected
 
-	fmt.Println("user ", receiver, " connection: ", clients[receiver].Conn)
+	fmt.Println("user ", receiver, " connection: ", clients[receiver])
 	if clients[receiver] == nil {
 		fmt.Println("Receiver not connected:", receiver)
 		return
@@ -196,5 +196,6 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 	if err != nil {
 		fmt.Println("Error forwarding to", receiver, ":", err)
 	}
+	fmt.Println("SENT MESSAGE")
 
 }
