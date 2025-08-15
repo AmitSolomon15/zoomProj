@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"os/exec"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -144,6 +145,25 @@ func connectWS(w http.ResponseWriter, r *http.Request) (string, *websocket.Conn)
 }
 
 func forwardMediaToPeer(sender string, msgType int, msg []byte) {
+
+	cmd := exec.Command("ffmpeg",
+		"-f", "s16le", // raw PCM format
+		"-ar", "48000", // sample rate
+		"-ac", "2", // channels
+		"-i", "pipe:0", // read from stdin
+		"-f", "mp4", // output format
+		"-movflags", "frag_keyframe+empty_moov+default_base_moof", // fragmented MP4 for streaming
+		"pipe:1", // write to stdout
+	)
+
+	stdin, _ := cmd.StdinPipe()
+	stdout, _ := cmd.StdoutPipe()
+
+	cmd.Stderr = os.Stderr // so you can debug FFmpeg logs
+	cmd.Start()
+
+	stdin.Write(msg)
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	//defer clients[sender].Conn.Close()
@@ -191,8 +211,17 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 	}
 	receiverConn := clients[receiver].Conn
 
+	outputMsg := make([]byte, 1024)
+	len, err := stdout.Read(outputMsg)
+
+	if err != nil {
+		fmt.Println("Error with ffmpeg: ", err)
+		return
+	}
 	// Forward the media
-	err = receiverConn.WriteMessage(msgType, msg)
+	fmt.Println("THE OUTPUT MSG: ", string(outputMsg[:len]))
+	err = receiverConn.WriteMessage(msgType, outputMsg[:len])
+
 	if err != nil {
 		fmt.Println("Error forwarding to", receiver, ":", err)
 	}
