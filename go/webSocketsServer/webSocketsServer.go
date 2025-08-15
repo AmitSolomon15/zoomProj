@@ -147,7 +147,7 @@ func connectWS(w http.ResponseWriter, r *http.Request) (string, *websocket.Conn)
 func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 
 	cmd := exec.Command("ffmpeg",
-		"-f", "s16le", // raw PCM format
+		"-f", "webm", // raw PCM format
 		"-ar", "48000", // sample rate
 		"-ac", "2", // channels
 		"-i", "pipe:0", // read from stdin
