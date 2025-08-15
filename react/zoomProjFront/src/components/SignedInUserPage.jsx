@@ -109,7 +109,7 @@ function SignedInUserPage(){
         getUsers();
       }
       else{
-        SendDataToSock;
+        SendDataToSock();
       }
     }   
 
