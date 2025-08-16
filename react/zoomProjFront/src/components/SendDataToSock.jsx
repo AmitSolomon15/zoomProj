@@ -5,8 +5,8 @@ import axios from "axios";
 function SendDataToSock(){
   console.log("IM HERE1");
   
-    
-  const username = localStorage.getItem("nUsername");
+   
+  const username = document.querySelector(".name").innerText;
   const socket = new WebSocket(`wss://zoomproj-back-ws.onrender.com/ws?username=${username}`);
   
   console.log("IM HERE2");
