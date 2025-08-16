@@ -26,9 +26,9 @@ var (
 	clients = make(map[string]*Client)
 	//clientsConnected = make(map[string]bool)
 	client *mongo.Client
-	cmd    *exec.Cmd = cmdInit()
 	stdin  io.WriteCloser
 	stdout io.ReadCloser
+	cmd    *exec.Cmd = cmdInit()
 )
 
 // Upgrader is used to upgrade HTTP connections to WebSocket connections.
@@ -64,7 +64,7 @@ func connectMongo() {
 	}
 }
 func cmdInit() *exec.Cmd {
-	return exec.Command("ffmpeg",
+	excmd := exec.Command("ffmpeg",
 		"-f", "webm", // raw PCM format
 		"-ar", "48000", // sample rate
 		"-ac", "2", // channels
@@ -73,56 +73,19 @@ func cmdInit() *exec.Cmd {
 		"-movflags", "frag_keyframe+empty_moov+default_base_moof", // fragmented MP4 for streaming
 		"pipe:1", // write to stdout
 	)
+	stdin, _ = excmd.StdinPipe()
+	stdout, _ = excmd.StdoutPipe()
+	return excmd
 }
-
-/*
-func wsConnectHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("ENTERES WS connect HNADLER")
-
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		fmt.Println("Error upgrading:", err)
-		return
-	}
-	fmt.Println("CONNECTED")
-	//defer conn.Close()
-	var username string
-
-	// First message should be JSON with username
-	_, msg, err := conn.ReadMessage()
-	if err != nil {
-		fmt.Println("Error reading username:", err)
-		return
-	}
-	fmt.Println(string(msg))
-
-	var initData struct {
-		Type     string
-		Username string
-	}
-
-	if err := json.Unmarshal(msg, &initData); err != nil {
-		fmt.Println("JSON parse error:", err)
-		return
-	}
-
-	username = initData.Username
-	//fmt.Printf("User %s connected\n", username)
-
-	clients[username] = &Client{Conn: conn}
-
-	fmt.Printf("User %s connected\n", username)
-	fmt.Println(conn.LocalAddr())
-	fmt.Println(conn.RemoteAddr())
-}*/
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	//cmd = cmdInit()
-	fmt.Println("PIPE1:")
-	stdin, _ = cmd.StdinPipe()
-	fmt.Println("PIPE2:")
-	stdout, _ = cmd.StdoutPipe()
-	fmt.Println("ENTERES WSHNADLER")
+	/*
+		fmt.Println("PIPE1:")
+		stdin, _ = cmd.StdinPipe()
+		fmt.Println("PIPE2:")
+		stdout, _ = cmd.StdoutPipe()
+		fmt.Println("ENTERES WSHNADLER")*/
 
 	username, conn := connectWS(w, r)
 	fmt.Printf("User %s connected\n", username)
@@ -167,16 +130,6 @@ func connectWS(w http.ResponseWriter, r *http.Request) (string, *websocket.Conn)
 }
 
 func forwardMediaToPeer(sender string, msgType int, msg []byte) {
-	/*
-		cmd := exec.Command("ffmpeg",
-			"-f", "webm", // raw PCM format
-			"-ar", "48000", // sample rate
-			"-ac", "2", // channels
-			"-i", "pipe:0", // read from stdin
-			"-f", "mp4", // output format
-			"-movflags", "frag_keyframe+empty_moov+default_base_moof", // fragmented MP4 for streaming
-			"pipe:1", // write to stdout
-		)*/
 
 	fmt.Println("ERRORHA:")
 	cmd.Stderr = os.Stderr // so you can debug FFmpeg logs
