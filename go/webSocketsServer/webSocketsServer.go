@@ -118,6 +118,10 @@ func wsConnectHandler(w http.ResponseWriter, r *http.Request) {
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	cmd = cmdInit()
+	fmt.Println("PIPE1:")
+	stdin, _ = cmd.StdinPipe()
+	fmt.Println("PIPE2:")
+	stdout, _ = cmd.StdoutPipe()
 	fmt.Println("ENTERES WSHNADLER")
 
 	username, conn := connectWS(w, r)
@@ -173,11 +177,6 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 			"-movflags", "frag_keyframe+empty_moov+default_base_moof", // fragmented MP4 for streaming
 			"pipe:1", // write to stdout
 		)*/
-
-	fmt.Println("PIPE1:")
-	stdin, _ = cmd.StdinPipe()
-	fmt.Println("PIPE2:")
-	stdout, _ = cmd.StdoutPipe()
 
 	fmt.Println("ERRORHA:")
 	cmd.Stderr = os.Stderr // so you can debug FFmpeg logs
