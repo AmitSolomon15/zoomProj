@@ -24,6 +24,7 @@ var (
 	clients = make(map[string]*Client)
 	//clientsConnected = make(map[string]bool)
 	client *mongo.Client
+	cmd    *exec.Cmd
 )
 
 // Upgrader is used to upgrade HTTP connections to WebSocket connections.
@@ -36,6 +37,7 @@ var upgrader = websocket.Upgrader{
 func main() {
 	fmt.Println("ENTERED MAIN")
 	connectMongo()
+	cmdInit()
 	http.HandleFunc("/ws", wsHandler)
 	//http.HandleFunc("/wsConn", wsConnectHandler)
 	//fmt.Println("WebSocket server started on :8080")
@@ -56,6 +58,17 @@ func connectMongo() {
 	if err != nil {
 		panic(err)
 	}
+}
+func cmdInit() {
+	cmd = exec.Command("ffmpeg",
+		"-f", "webm", // raw PCM format
+		"-ar", "48000", // sample rate
+		"-ac", "2", // channels
+		"-i", "pipe:0", // read from stdin
+		"-f", "mp4", // output format
+		"-movflags", "frag_keyframe+empty_moov+default_base_moof", // fragmented MP4 for streaming
+		"pipe:1", // write to stdout
+	)
 }
 
 /*
@@ -145,16 +158,16 @@ func connectWS(w http.ResponseWriter, r *http.Request) (string, *websocket.Conn)
 }
 
 func forwardMediaToPeer(sender string, msgType int, msg []byte) {
-
-	cmd := exec.Command("ffmpeg",
-		"-f", "webm", // raw PCM format
-		"-ar", "48000", // sample rate
-		"-ac", "2", // channels
-		"-i", "pipe:0", // read from stdin
-		"-f", "mp4", // output format
-		"-movflags", "frag_keyframe+empty_moov+default_base_moof", // fragmented MP4 for streaming
-		"pipe:1", // write to stdout
-	)
+	/*
+		cmd := exec.Command("ffmpeg",
+			"-f", "webm", // raw PCM format
+			"-ar", "48000", // sample rate
+			"-ac", "2", // channels
+			"-i", "pipe:0", // read from stdin
+			"-f", "mp4", // output format
+			"-movflags", "frag_keyframe+empty_moov+default_base_moof", // fragmented MP4 for streaming
+			"pipe:1", // write to stdout
+		)*/
 
 	stdin, _ := cmd.StdinPipe()
 	stdout, _ := cmd.StdoutPipe()
