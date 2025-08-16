@@ -117,7 +117,7 @@ func wsConnectHandler(w http.ResponseWriter, r *http.Request) {
 }*/
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
-	//cmd = cmdInit()
+	cmd = cmdInit()
 	fmt.Println("ENTERES WSHNADLER")
 
 	username, conn := connectWS(w, r)
@@ -233,6 +233,7 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 	receiverConn := clients[receiver].Conn
 
 	outputMsg := make([]byte, 1024)
+
 	len, err := stdout.Read(outputMsg)
 
 	if err != nil {
