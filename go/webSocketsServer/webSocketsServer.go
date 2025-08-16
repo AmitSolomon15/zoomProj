@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"io"
+
 	//"encoding/json"
 	"fmt"
 	"net/http"
@@ -25,6 +27,8 @@ var (
 	//clientsConnected = make(map[string]bool)
 	client *mongo.Client
 	cmd    *exec.Cmd = cmdInit()
+	stdin  io.WriteCloser
+	stdout io.ReadCloser
 )
 
 // Upgrader is used to upgrade HTTP connections to WebSocket connections.
@@ -113,7 +117,7 @@ func wsConnectHandler(w http.ResponseWriter, r *http.Request) {
 }*/
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
-	cmd = cmdInit()
+	//cmd = cmdInit()
 	fmt.Println("ENTERES WSHNADLER")
 
 	username, conn := connectWS(w, r)
@@ -171,9 +175,9 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 		)*/
 
 	fmt.Println("PIPE1:")
-	stdin, _ := cmd.StdinPipe()
+	stdin, _ = cmd.StdinPipe()
 	fmt.Println("PIPE2:")
-	stdout, _ := cmd.StdoutPipe()
+	stdout, _ = cmd.StdoutPipe()
 
 	fmt.Println("ERRORHA:")
 	cmd.Stderr = os.Stderr // so you can debug FFmpeg logs
