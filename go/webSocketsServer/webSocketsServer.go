@@ -117,7 +117,7 @@ func wsConnectHandler(w http.ResponseWriter, r *http.Request) {
 }*/
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
-	cmd = cmdInit()
+	//cmd = cmdInit()
 	fmt.Println("PIPE1:")
 	stdin, _ = cmd.StdinPipe()
 	fmt.Println("PIPE2:")
