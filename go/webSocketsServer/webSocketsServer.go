@@ -24,7 +24,7 @@ var (
 	clients = make(map[string]*Client)
 	//clientsConnected = make(map[string]bool)
 	client *mongo.Client
-	cmd    *exec.Cmd
+	cmd    *exec.Cmd = cmdInit()
 )
 
 // Upgrader is used to upgrade HTTP connections to WebSocket connections.
@@ -59,8 +59,8 @@ func connectMongo() {
 		panic(err)
 	}
 }
-func cmdInit() {
-	cmd = exec.Command("ffmpeg",
+func cmdInit() *exec.Cmd {
+	return exec.Command("ffmpeg",
 		"-f", "webm", // raw PCM format
 		"-ar", "48000", // sample rate
 		"-ac", "2", // channels
