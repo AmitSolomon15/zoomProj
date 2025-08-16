@@ -113,6 +113,7 @@ func wsConnectHandler(w http.ResponseWriter, r *http.Request) {
 }*/
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
+	cmd = cmdInit()
 	fmt.Println("ENTERES WSHNADLER")
 
 	username, conn := connectWS(w, r)
