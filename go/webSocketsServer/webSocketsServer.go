@@ -169,9 +169,12 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 			"pipe:1", // write to stdout
 		)*/
 
+	fmt.Println("PIPE1:")
 	stdin, _ := cmd.StdinPipe()
+	fmt.Println("PIPE2:")
 	stdout, _ := cmd.StdoutPipe()
 
+	fmt.Println("ERROR:")
 	cmd.Stderr = os.Stderr // so you can debug FFmpeg logs
 	cmd.Start()
 
