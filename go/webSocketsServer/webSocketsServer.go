@@ -110,7 +110,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("ENTERED THe LOOP")
 		time.Sleep(time.Second)
 		msgType, msg, err := conn.ReadMessage()
-		fmt.Println("msg recived is: ", string(msg))
+		//fmt.Println("msg recived is: ", string(msg))
 		if err != nil {
 			fmt.Println("Read error:", err)
 			fmt.Println("BREAKING")
