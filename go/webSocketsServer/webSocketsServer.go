@@ -184,7 +184,7 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 	}
 	receiverConn := clients[receiver].Conn
 
-	outputMsg := make([]byte, 1024)
+	outputMsg := make([]byte, 4096)
 
 	len, err := stdout.Read(outputMsg)
 
