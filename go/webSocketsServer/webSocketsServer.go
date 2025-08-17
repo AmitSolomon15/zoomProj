@@ -79,7 +79,7 @@ func cmdInit() *exec.Cmd {
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
-	//cmd = cmdInit()
+	cmd = cmdInit()
 	/*
 		fmt.Println("PIPE1:")
 		stdin, _ = cmd.StdinPipe()
@@ -184,7 +184,7 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 	}
 	receiverConn := clients[receiver].Conn
 
-	outputMsg := make([]byte, 4096)
+	outputMsg := make([]byte, 1024)
 
 	len, err := stdout.Read(outputMsg)
 
