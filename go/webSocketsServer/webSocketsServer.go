@@ -65,10 +65,10 @@ func connectMongo() {
 }
 func cmdInit() *exec.Cmd {
 	excmd := exec.Command("ffmpeg",
+		"-i", "pipe:0", // read from stdin
 		"-f", "webm", // raw PCM format
 		"-ar", "48000", // sample rate
 		"-ac", "2", // channels
-		"-i", "pipe:0", // read from stdin
 		"-f", "mp4", // output format
 		"-movflags", "frag_keyframe+empty_moov+default_base_moof", // fragmented MP4 for streaming
 		"pipe:1", // write to stdout
