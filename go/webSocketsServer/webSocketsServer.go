@@ -66,7 +66,6 @@ func connectMongo() {
 func cmdInit() *exec.Cmd {
 	excmd := exec.Command("ffmpeg",
 		"-f", "webm", // raw PCM format
-
 		"-ac", "2", // channels
 		"-i", "pipe:0", // read from stdin
 		"-ar", "48000", // sample rate
