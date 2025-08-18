@@ -1,8 +1,12 @@
 import axios from "axios";
-
+import { useRef } from 'react';
 
 
 function SendDataToSock(){
+  const mediaRecorderRef = useRef(null);
+  const mediaSourceRef = useRef(null);
+  const sourceBufferRef = useRef(null);
+
   console.log("IM HERE1");
   
    
@@ -13,15 +17,20 @@ function SendDataToSock(){
   navigator.mediaDevices.getUserMedia({ video: true, audio: true })
     .then(stream => {
       console.log("IM HERE3");
-      const recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
+      mediaRecorderRef = new MediaRecorder(stream, { mimeType: "video/webm" });
 
-      recorder.ondataavailable = (event) => {
-        if (event.data.size > 0 && socket.readyState === WebSocket.OPEN) {
-          socket.send(event.data);
-        }
+      mediaSourceRef.current = new MediaSource();
+      mediaSourceRef.current.addEventListener('sourceopen', () => {
+      sourceBufferRef.current = mediaSourceRef.current.addSourceBuffer('video/webm');
+      });
+
+      mediaRecorderRef.current.ondataavailable = (event) => {
+      if (event.data.size > 0 && sourceBufferRef.current && !sourceBufferRef.current.updating) {
+        sourceBufferRef.current.appendBuffer(event.data);
+        socket.send(sourceBufferRef.current);
+      }
       };
-
-      recorder.start(1000); // שולח כל שנייה (chunk)
+      mediaRecorderRef.current.start(1000); // שולח כל שנייה (chunk)
     })
     .catch(error => {
       console.error('Error accessing media devices:', error);
