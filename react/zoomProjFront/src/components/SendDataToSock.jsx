@@ -31,7 +31,7 @@ function SendDataToSock(){
       };
 
       recorder.start();
-      setTimeout(() => {recorder.stop},1000);
+      setTimeout(() => {recorder.stop()},1000);
       console.log("IM HERE5");
       }
 
