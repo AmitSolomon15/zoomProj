@@ -19,6 +19,7 @@ function SendDataToSock(){
 
       recorder.ondataavailable = (event) => {
         if (event.data.size > 0 && socket.readyState === WebSocket.OPEN) {
+          console.log("IM HERE 4");
           socket.send(event.data);
         }
       };
