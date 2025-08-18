@@ -18,6 +18,7 @@ function SendDataToSock(){
       let recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
 
       recorder.ondataavailable = (event) => {
+        console.log("IM HERE3.5");
         if (event.data.size > 0 && socket.readyState === WebSocket.OPEN) {
           console.log("IM HERE4");
           socket.send(event.data);
