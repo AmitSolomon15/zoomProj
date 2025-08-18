@@ -13,9 +13,10 @@ function SendDataToSock(){
   navigator.mediaDevices.getUserMedia({ video: true, audio: true })
     .then(stream => {
 
+      let recorder
       function startRecord(){
       console.log("IM HERE3");
-      let recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
+      recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
 
       recorder.ondataavailable = (event) => {
         console.log("IM HERE3.5");
