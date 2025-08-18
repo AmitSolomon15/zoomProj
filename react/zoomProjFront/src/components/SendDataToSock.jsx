@@ -12,8 +12,10 @@ function SendDataToSock(){
   console.log("IM HERE2");
   navigator.mediaDevices.getUserMedia({ video: true, audio: true })
     .then(stream => {
+
+      function startRecord(){
       console.log("IM HERE3");
-      const recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
+      let recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
 
       recorder.ondataavailable = (event) => {
         if (event.data.size > 0 && socket.readyState === WebSocket.OPEN) {
@@ -21,7 +23,15 @@ function SendDataToSock(){
         }
       };
 
-      recorder.start(1000); // שולח כל שנייה (chunk)
+      recorder.onstop = () =>{
+        startRecord();
+      };
+
+      recorder.start();
+      setTimeout(() => recorder.stop,1000);
+      }
+
+      startRecord();
     })
     .catch(error => {
       console.error('Error accessing media devices:', error);
