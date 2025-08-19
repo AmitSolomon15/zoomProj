@@ -228,8 +228,9 @@ func isMp4(msg []byte) bool {
 	fmt.Println("chck2 ", chckISOM)
 	fmt.Println("chck3 ", chkFORMAT)
 	if chckFTYP != "ftyp" && chckISOM != "isom" && !rightFormat {
+		fmt.Println("NOT MP4")
 		return false
 	}
-
+	fmt.Println("MP4")
 	return true
 }
