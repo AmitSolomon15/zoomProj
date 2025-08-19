@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"io"
 
 	//"encoding/json"
@@ -96,6 +97,10 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("ENTERED THe LOOP")
 		time.Sleep(time.Second)
 		msgType, msg, err := conn.ReadMessage()
+		if isMp4(msg) {
+			json.NewEncoder(w).Encode(msg)
+		}
+
 		//fmt.Println("msg recived is: ", string(msg))
 		if err != nil {
 			fmt.Println("Read error:", err)
@@ -202,4 +207,24 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 	}
 	fmt.Println("SENT MESSAGE")
 
+}
+
+func isMp4(msg []byte) bool {
+	fmt.Println("ENTERED ISMP")
+	chckFTYP := string(msg[3:7])
+	chckISOM := string(msg[7:11])
+	chkFORMAT := string(msg[15:19])
+	validFormats := [...]string{"avc1", "mp41", "iso2", "isom", "mp42"}
+	rightFormat := false
+	for _, format := range validFormats {
+		if chkFORMAT == format {
+			rightFormat = true
+		}
+	}
+
+	if chckFTYP != "ftyp" && chckISOM != "isom" && !rightFormat {
+		return false
+	}
+
+	return true
 }
