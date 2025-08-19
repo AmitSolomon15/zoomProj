@@ -11,10 +11,13 @@ function SendDataToSock(){
 
   socket.addEventListener("message", (event)=>{
     console.log("CHANGES SAVED");
-    const video = document.querySelector(".vidSrc");
-    video.src = event.data;
     console.log("RECIVING MP4 ",event.data);
-  })
+    return(
+      <video width="750" height="500" controls className="vid">
+        <source src={event.data} type="video/mp4" className="vidSrc"/>
+      </video>
+    );
+  });
   
   console.log("IM HERE2");
   navigator.mediaDevices.getUserMedia({ video: true, audio: true })
