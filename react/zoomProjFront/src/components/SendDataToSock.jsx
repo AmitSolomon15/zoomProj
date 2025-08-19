@@ -13,9 +13,11 @@ function SendDataToSock(){
     console.log("CHANGES SAVED");
     console.log("RECIVING MP4 ",event.data);
     return(
+      <div>
       <video width="750" height="500" controls className="vid">
         <source src={event.data} type="video/mp4" className="vidSrc"/>
       </video>
+      </div>
     );
   });
   
