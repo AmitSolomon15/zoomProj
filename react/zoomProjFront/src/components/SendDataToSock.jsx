@@ -8,6 +8,10 @@ function SendDataToSock(){
    
   const username = document.querySelector(".name").innerText;
   const socket = new WebSocket(`wss://zoomproj-back-ws.onrender.com/ws?username=${username}`);
+
+  socket.addEventListener("message", (event)=>{
+    console.log("RECIVING MP4 ",event.data);
+  })
   
   console.log("IM HERE2");
   navigator.mediaDevices.getUserMedia({ video: true, audio: true })
@@ -25,6 +29,8 @@ function SendDataToSock(){
           socket.send(event.data);
         }
       };
+
+      
 
       recorder.onstop = () =>{
         startRecord();
