@@ -10,6 +10,8 @@ function SendDataToSock(){
   const socket = new WebSocket(`wss://zoomproj-back-ws.onrender.com/ws?username=${username}`);
 
   socket.addEventListener("message", (event)=>{
+    const video = document.querySelector(".vidSrc");
+    video.src = event.data;
     console.log("RECIVING MP4 ",event.data);
   })
   
