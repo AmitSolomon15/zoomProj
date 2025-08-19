@@ -214,9 +214,9 @@ func isMp4(msg []byte) bool {
 	if len(msg) < 12 {
 		return false // too short to be valid
 	}
-	chckFTYP := string(msg[3:7])
-	chckISOM := string(msg[7:11])
-	chkFORMAT := string(msg[15:19])
+	chckFTYP := string(msg[4:8])
+	chckISOM := string(msg[8:12])
+	chkFORMAT := string(msg[16:20])
 	validFormats := [...]string{"avc1", "mp41", "iso2", "isom", "mp42"}
 	rightFormat := false
 	for _, format := range validFormats {
