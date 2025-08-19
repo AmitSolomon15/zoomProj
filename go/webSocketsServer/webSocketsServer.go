@@ -225,8 +225,9 @@ func isMp4(msg []byte) bool {
 	*/
 
 	if chckFTYP != "ftypiso5" && chkFORMAT != "iso5iso6mp41" {
+		fmt.Println("NOT MP4")
 		return false
 	}
-
+	fmt.Println("MP4")
 	return true
 }
