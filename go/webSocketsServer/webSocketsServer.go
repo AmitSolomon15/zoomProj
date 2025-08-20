@@ -97,28 +97,30 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	// Listen for messages
 	for {
 		fmt.Println("ENTERED THe LOOP")
-		time.Sleep(time.Second)
-		mutex.Lock()
-		msgType, msg, err := conn.ReadMessage()
-		mutex.Unlock()
-		if isMp4(msg) {
-			json.NewEncoder(w).Encode(msg)
-			stdin.Close()
-			stdout.Close()
-			stdin, _ = cmd.StdinPipe()
-			stdout, _ = cmd.StdoutPipe()
-		}
+		//time.Sleep(time.Second)
+		if conn != nil {
+			mutex.Lock()
+			msgType, msg, err := conn.ReadMessage()
+			mutex.Unlock()
+			if isMp4(msg) {
+				json.NewEncoder(w).Encode(msg)
+				stdin.Close()
+				stdout.Close()
+				stdin, _ = cmd.StdinPipe()
+				stdout, _ = cmd.StdoutPipe()
+			}
 
-		//fmt.Println("msg recived is: ", string(msg))
-		if err != nil {
-			fmt.Println("Read error:", err)
-			fmt.Println("BREAKING")
-			break
-		}
+			//fmt.Println("msg recived is: ", string(msg))
+			if err != nil {
+				fmt.Println("Read error:", err)
+				fmt.Println("BREAKING")
+				break
+			}
 
-		// Handle media forwarding
-		fmt.Println("GOING FPRWORD")
-		forwardMediaToPeer(username, msgType, msg)
+			// Handle media forwarding
+			fmt.Println("GOING FPRWORD")
+			forwardMediaToPeer(username, msgType, msg)
+		}
 	}
 
 	// Clean up on disconnect
