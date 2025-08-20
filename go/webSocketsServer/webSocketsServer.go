@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"sync"
 
 	//"encoding/json"
 	"fmt"
@@ -25,6 +26,7 @@ type Client struct {
 
 var (
 	clients = make(map[string]*Client)
+	mutex   sync.Mutex
 	//clientsConnected = make(map[string]bool)
 	client *mongo.Client
 	stdin  io.WriteCloser
@@ -96,7 +98,9 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	for {
 		fmt.Println("ENTERED THe LOOP")
 		time.Sleep(time.Second)
+		mutex.Lock()
 		msgType, msg, err := conn.ReadMessage()
+		mutex.Unlock()
 		if isMp4(msg) {
 			json.NewEncoder(w).Encode(msg)
 			stdin.Close()
@@ -145,7 +149,9 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 	cmd.Stderr = os.Stderr // so you can debug FFmpeg logs
 	cmd.Start()
 
+	mutex.Lock()
 	stdin.Write(msg)
+	mutex.Unlock()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -196,16 +202,18 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 
 	outputMsg := make([]byte, 1024)
 
+	mutex.Lock()
 	len, err := stdout.Read(outputMsg)
-
+	mutex.Unlock()
 	if err != nil {
 		fmt.Println("Error with ffmpeg: ", err)
 		return
 	}
 	// Forward the media
 	fmt.Println("THE OUTPUT MSG: ", string(outputMsg[:len]))
+	mutex.Lock()
 	err = receiverConn.WriteMessage(msgType, outputMsg[:len])
-
+	mutex.Unlock()
 	if err != nil {
 		fmt.Println("Error forwarding to", receiver, ":", err)
 	}
