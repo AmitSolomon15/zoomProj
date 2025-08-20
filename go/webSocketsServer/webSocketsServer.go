@@ -204,9 +204,11 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 
 	outputMsg := make([]byte, 1024)
 
+	fmt.Println("ABOUT TO READ")
 	mutex.Lock()
 	len, err := stdout.Read(outputMsg)
 	mutex.Unlock()
+	fmt.Println("I RAD!")
 	if err != nil {
 		fmt.Println("Error with ffmpeg: ", err)
 		return
