@@ -98,29 +98,29 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	for {
 		fmt.Println("ENTERED THe LOOP")
 		//time.Sleep(time.Second)
-		if conn != nil {
-			mutex.Lock()
-			msgType, msg, err := conn.ReadMessage()
-			mutex.Unlock()
-			if isMp4(msg) {
-				json.NewEncoder(w).Encode(msg)
-				stdin.Close()
-				stdout.Close()
-				stdin, _ = cmd.StdinPipe()
-				stdout, _ = cmd.StdoutPipe()
-			}
 
-			//fmt.Println("msg recived is: ", string(msg))
-			if err != nil {
-				fmt.Println("Read error:", err)
-				fmt.Println("BREAKING")
-				break
-			}
-
-			// Handle media forwarding
-			fmt.Println("GOING FPRWORD")
-			forwardMediaToPeer(username, msgType, msg)
+		//mutex.Lock()
+		msgType, msg, err := conn.ReadMessage()
+		//mutex.Unlock()
+		if isMp4(msg) {
+			json.NewEncoder(w).Encode(msg)
+			stdin.Close()
+			stdout.Close()
+			stdin, _ = cmd.StdinPipe()
+			stdout, _ = cmd.StdoutPipe()
 		}
+
+		//fmt.Println("msg recived is: ", string(msg))
+		if err != nil {
+			fmt.Println("Read error:", err)
+			fmt.Println("BREAKING")
+			break
+		}
+
+		// Handle media forwarding
+		fmt.Println("GOING FPRWORD")
+		forwardMediaToPeer(username, msgType, msg)
+
 	}
 
 	// Clean up on disconnect
@@ -205,9 +205,11 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 	outputMsg := make([]byte, 1024)
 
 	fmt.Println("ABOUT TO READ")
+
 	mutex.Lock()
 	len, err := stdout.Read(outputMsg)
 	mutex.Unlock()
+
 	fmt.Println("I RAD!")
 	if err != nil {
 		fmt.Println("Error with ffmpeg: ", err)
@@ -215,9 +217,11 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 	}
 	// Forward the media
 	fmt.Println("THE OUTPUT MSG: ", string(outputMsg[:len]))
-	mutex.Lock()
+
+	//mutex.Lock()
 	err = receiverConn.WriteMessage(msgType, outputMsg[:len])
-	mutex.Unlock()
+	//mutex.Unlock()
+
 	if err != nil {
 		fmt.Println("Error forwarding to", receiver, ":", err)
 	}
