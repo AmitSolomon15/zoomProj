@@ -3,7 +3,8 @@ package main
 import (
 	"bytes"
 	"context"
-	"encoding/json"
+
+	//"encoding/json"
 	"io"
 	"sync"
 
@@ -101,7 +102,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		//fmt.Println("RECIVED MSG: ", msg)
 		if isMp4(msg) {
 			mutex.Lock()
-			json.NewEncoder(w).Encode(msg)
+			conn.WriteJSON(msg)
 			mutex.Unlock()
 			continue
 		}
