@@ -208,9 +208,9 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 
 	fmt.Println("ABOUT TO READ")
 
-	mutex.Lock()
+	//mutex.Lock()
 	len, err := stdout.Read(outputMsg)
-	mutex.Unlock()
+	//mutex.Unlock()
 
 	fmt.Println("I RAD!")
 	if err != nil {
