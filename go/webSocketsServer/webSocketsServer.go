@@ -68,7 +68,7 @@ func connectMongo() {
 		panic(err)
 	}
 }
-func cmdInit() *exec.Cmd {
+func cmdInit() {
 	excmd := exec.Command("ffmpeg",
 		"-f", "webm", // webm format
 		"-ac", "2", // channels
@@ -83,7 +83,6 @@ func cmdInit() *exec.Cmd {
 	stdout, _ = excmd.StdoutPipe()
 	excmd.Stderr = os.Stderr
 	excmd.Start()
-	return excmd
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
