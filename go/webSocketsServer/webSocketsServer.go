@@ -102,7 +102,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		//mutex.Lock()
 		msgType, msg, err := conn.ReadMessage()
 		//mutex.Unlock()
-		//fmt.Println("RECIVED MSG: ", msg)
+		fmt.Println("RECIVED MSG: ", msg)
 		if isMp4(msg) {
 			json.NewEncoder(w).Encode(msg)
 			//stdin.Close()
