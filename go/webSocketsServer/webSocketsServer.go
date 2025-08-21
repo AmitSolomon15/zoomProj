@@ -102,7 +102,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		//mutex.Lock()
 		msgType, msg, err := conn.ReadMessage()
 		//mutex.Unlock()
-		fmt.Println("RECIVED MSG: ", msg)
+		//fmt.Println("RECIVED MSG: ", msg)
 		if isMp4(msg) {
 			json.NewEncoder(w).Encode(msg)
 			stdin.Close()
@@ -217,7 +217,7 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 		return
 	}
 	// Forward the media
-	fmt.Println("THE OUTPUT MSG: ", string(outputMsg[:len]))
+	//fmt.Println("THE OUTPUT MSG: ", string(outputMsg[:len]))
 
 	//mutex.Lock()
 	err = receiverConn.WriteMessage(msgType, outputMsg[:len])
@@ -235,23 +235,27 @@ func isMp4(msg []byte) bool {
 	if len(msg) < 12 {
 		return false // too short to be valid
 	}
-	chckFTYP := string(msg[4:8])
-	chckISOM := string(msg[8:12])
-	chkFORMAT := string(msg[16:20])
-	validFormats := [...]string{"avc1", "mp41", "iso2", "isom", "mp42"}
-	rightFormat := false
-	for _, format := range validFormats {
-		if chkFORMAT == format {
-			rightFormat = true
+	/*
+		chckFTYP := string(msg[4:8])
+		chckISOM := string(msg[8:12])
+		chkFORMAT := string(msg[16:20])
+		validFormats := [...]string{"avc1", "mp41", "iso2", "isom", "mp42"}
+		rightFormat := false
+		for _, format := range validFormats {
+			if chkFORMAT == format {
+				rightFormat = true
+			}
 		}
-	}
-	fmt.Println("chck1 ", chckFTYP)
-	fmt.Println("chck2 ", chckISOM)
-	fmt.Println("chck3 ", chkFORMAT)
-	if chckFTYP != "ftyp" && chckISOM != "isom" && !rightFormat {
-		fmt.Println("NOT MP4")
-		return false
-	}
-	fmt.Println("MP4")
-	return true
+		fmt.Println("chck1 ", chckFTYP)
+		fmt.Println("chck2 ", chckISOM)
+		fmt.Println("chck3 ", chkFORMAT)
+		if chckFTYP != "ftyp" && chckISOM != "isom" && !rightFormat {
+			fmt.Println("NOT MP4")
+			return false
+		}
+		fmt.Println("MP4")
+	*/
+	header := string(msg[0:4])
+	fmt.Println("PRINT HEADER: ", header)
+	return header == "1A 45 DF A3"
 }
