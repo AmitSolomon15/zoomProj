@@ -105,10 +105,11 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		//fmt.Println("RECIVED MSG: ", msg)
 		if isMp4(msg) {
 			json.NewEncoder(w).Encode(msg)
-			stdin.Close()
+			//stdin.Close()
 			//stdout.Close()
-			stdin, _ = cmd.StdinPipe()
-			stdout, _ = cmd.StdoutPipe()
+			//stdin, _ = cmd.StdinPipe()
+			//stdout, _ = cmd.StdoutPipe()
+			continue
 		}
 
 		//fmt.Println("msg recived is: ", string(msg))
