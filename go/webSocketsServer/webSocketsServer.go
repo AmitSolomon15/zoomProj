@@ -86,13 +86,6 @@ func cmdInit() *exec.Cmd {
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
-	//cmd = cmdInit()
-	/*
-		fmt.Println("PIPE1:")
-		stdin, _ = cmd.StdinPipe()
-		fmt.Println("PIPE2:")
-		stdout, _ = cmd.StdoutPipe()
-		fmt.Println("ENTERES WSHNADLER")*/
 
 	username, conn := connectWS(w, r)
 	fmt.Printf("User %s connected\n", username)
@@ -105,17 +98,13 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		//mutex.Lock()
 		msgType, msg, err := conn.ReadMessage()
 		//mutex.Unlock()
-		fmt.Println("RECIVED MSG: ", msg)
+		//fmt.Println("RECIVED MSG: ", msg)
 		if isMp4(msg) {
 			json.NewEncoder(w).Encode(msg)
-			//stdin.Close()
-			//stdout.Close()
-			//stdin, _ = cmd.StdinPipe()
-			//stdout, _ = cmd.StdoutPipe()
+
 			continue
 		}
 
-		//fmt.Println("msg recived is: ", string(msg))
 		if err != nil {
 			fmt.Println("Read error:", err)
 			fmt.Println("BREAKING")
@@ -140,7 +129,6 @@ func connectWS(w http.ResponseWriter, r *http.Request) (string, *websocket.Conn)
 		fmt.Println("Error upgrading:", err)
 		return "", nil
 	}
-	//defer conn.Close()
 	fmt.Println("CONNECTED")
 
 	username := r.URL.Query().Get("username")
@@ -153,8 +141,6 @@ func connectWS(w http.ResponseWriter, r *http.Request) (string, *websocket.Conn)
 func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 
 	fmt.Println("ERRORHA:")
-	//cmd.Stderr = os.Stderr // so you can debug FFmpeg logs
-	//cmd.Start()
 
 	mutex.Lock()
 	stdin.Write(msg)
@@ -162,7 +148,7 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	//defer clients[sender].Conn.Close()
+
 	collection := client.Database("users").Collection("usersInCall")
 
 	fmt.Println(sender)
@@ -211,17 +197,15 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 
 	fmt.Println("ABOUT TO READ")
 
-	//mutex.Lock()
+	mutex.Lock()
 	len, err := stdout.Read(outputMsg)
-	//mutex.Unlock()
+	mutex.Unlock()
 
 	fmt.Println("I RAD!")
 	if err != nil {
 		fmt.Println("Error with ffmpeg: ", err)
 		return
 	}
-	// Forward the media
-	//fmt.Println("THE OUTPUT MSG: ", string(outputMsg[:len]))
 
 	mutex.Lock()
 	err = receiverConn.WriteMessage(msgType, outputMsg[:len])
