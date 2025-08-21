@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"io"
@@ -236,27 +237,8 @@ func isMp4(msg []byte) bool {
 	if len(msg) < 12 {
 		return false // too short to be valid
 	}
-	/*
-		chckFTYP := string(msg[4:8])
-		chckISOM := string(msg[8:12])
-		chkFORMAT := string(msg[16:20])
-		validFormats := [...]string{"avc1", "mp41", "iso2", "isom", "mp42"}
-		rightFormat := false
-		for _, format := range validFormats {
-			if chkFORMAT == format {
-				rightFormat = true
-			}
-		}
-		fmt.Println("chck1 ", chckFTYP)
-		fmt.Println("chck2 ", chckISOM)
-		fmt.Println("chck3 ", chkFORMAT)
-		if chckFTYP != "ftyp" && chckISOM != "isom" && !rightFormat {
-			fmt.Println("NOT MP4")
-			return false
-		}
-		fmt.Println("MP4")
-	*/
-	header := string(msg[0:4])
+	header := msg[0:4]
+	invalidHeader := []byte{0x1A, 0x45, 0xDF, 0xA3}
 	fmt.Println("PRINT HEADER: ", header)
-	return header == "1A 45 DF A3"
+	return !bytes.Equal(header, invalidHeader)
 }
