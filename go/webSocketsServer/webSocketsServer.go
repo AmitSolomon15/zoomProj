@@ -32,7 +32,7 @@ var (
 	client *mongo.Client
 	stdin  io.WriteCloser
 	stdout io.ReadCloser
-	cmd    *exec.Cmd = cmdInit()
+	//cmd    *exec.Cmd = cmdInit()
 )
 
 // Upgrader is used to upgrade HTTP connections to WebSocket connections.
@@ -80,11 +80,13 @@ func cmdInit() *exec.Cmd {
 	)
 	stdin, _ = excmd.StdinPipe()
 	stdout, _ = excmd.StdoutPipe()
+	excmd.Stderr = os.Stderr
+	excmd.Start()
 	return excmd
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
-	cmd = cmdInit()
+	//cmd = cmdInit()
 	/*
 		fmt.Println("PIPE1:")
 		stdin, _ = cmd.StdinPipe()
@@ -151,8 +153,8 @@ func connectWS(w http.ResponseWriter, r *http.Request) (string, *websocket.Conn)
 func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 
 	fmt.Println("ERRORHA:")
-	cmd.Stderr = os.Stderr // so you can debug FFmpeg logs
-	cmd.Start()
+	//cmd.Stderr = os.Stderr // so you can debug FFmpeg logs
+	//cmd.Start()
 
 	mutex.Lock()
 	stdin.Write(msg)
@@ -221,9 +223,9 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 	// Forward the media
 	//fmt.Println("THE OUTPUT MSG: ", string(outputMsg[:len]))
 
-	//mutex.Lock()
+	mutex.Lock()
 	err = receiverConn.WriteMessage(msgType, outputMsg[:len])
-	//mutex.Unlock()
+	mutex.Unlock()
 
 	if err != nil {
 		fmt.Println("Error forwarding to", receiver, ":", err)

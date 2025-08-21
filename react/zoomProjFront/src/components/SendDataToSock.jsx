@@ -24,11 +24,8 @@ function SendDataToSock(){
   console.log("IM HERE2");
   navigator.mediaDevices.getUserMedia({ video: true, audio: true })
     .then(stream => {
-
-      let recorder;
-      function startRecord(){
       console.log("IM HERE3");
-      recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
+      const recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
 
       recorder.ondataavailable = (event) => {
         console.log("IM HERE3.5");
@@ -38,18 +35,12 @@ function SendDataToSock(){
         }
       };
 
+
+      recorder.start(1000);
+      
+      console.log("IM HERE5");
       
 
-      recorder.onstop = () =>{
-        startRecord();
-      };
-
-      recorder.start();
-      setTimeout(() => {recorder.stop()},2000);
-      console.log("IM HERE5");
-      }
-
-      console.log("IM HERE6")
       startRecord();
     })
     .catch(error => {
