@@ -41,7 +41,7 @@ function SendDataToSock(){
       console.log("IM HERE5");
       
 
-      startRecord();
+      //startRecord();
     })
     .catch(error => {
       console.error('Error accessing media devices:', error);
