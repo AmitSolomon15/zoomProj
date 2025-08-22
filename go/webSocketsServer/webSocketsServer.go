@@ -98,6 +98,8 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		msgType, msg, err := conn.ReadMessage()
 		mutex.Unlock()
 
+		fmt.Println("msgType is: ", msgType)
+
 		if err != nil {
 			fmt.Println("Read error:", err)
 			fmt.Println("BREAKING")
@@ -138,8 +140,6 @@ func connectWS(w http.ResponseWriter, r *http.Request) (string, *websocket.Conn)
 }
 
 func forwardMediaToPeer(sender string, msgType int, msg []byte) {
-
-	fmt.Println("ERRORHA:")
 
 	mutex.Lock()
 	stdin.Write(msg)
@@ -207,7 +207,7 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 	}
 
 	mutex.Lock()
-	err = receiverConn.WriteMessage(msgType, outputMsg[:len])
+	err = receiverConn.WriteMessage(websocket.BinaryMessage, outputMsg[:len])
 	mutex.Unlock()
 
 	if err != nil {
