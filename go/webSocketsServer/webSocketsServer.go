@@ -34,6 +34,7 @@ var (
 	stdin  io.WriteCloser
 	stdout io.ReadCloser
 	//cmd    *exec.Cmd = cmdInit()
+	ffmpegOutChan = make(chan []byte, 1024)
 )
 
 // Upgrader is used to upgrade HTTP connections to WebSocket connections.
@@ -83,6 +84,22 @@ func cmdInit() {
 	stdout, _ = excmd.StdoutPipe()
 	excmd.Stderr = os.Stderr
 	excmd.Start()
+
+	go func() {
+		buf := make([]byte, 1024)
+		for {
+			n, err := stdout.Read(buf)
+			if err != nil {
+				fmt.Println("ffmpeg stdout error:", err)
+				close(ffmpegOutChan)
+				return
+			}
+			// copy to avoid re-use of buf
+			data := make([]byte, n)
+			copy(data, buf[:n])
+			ffmpegOutChan <- data
+		}
+	}()
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
@@ -196,18 +213,17 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 
 	fmt.Println("ABOUT TO READ")
 
-	mutex.Lock()
-	len, err := stdout.Read(outputMsg)
-	mutex.Unlock()
+	select {
+	case outputMsg := <-ffmpegOutChan:
+		receiverConn.WriteMessage(websocket.BinaryMessage, outputMsg)
+	default:
 
-	fmt.Println("I RAD!")
-	if err != nil {
-		fmt.Println("Error with ffmpeg: ", err)
-		return
 	}
 
+	fmt.Println("I RAD!")
+
 	mutex.Lock()
-	err = receiverConn.WriteMessage(websocket.BinaryMessage, outputMsg[:len])
+	err = receiverConn.WriteMessage(websocket.BinaryMessage, outputMsg)
 	mutex.Unlock()
 
 	if err != nil {
