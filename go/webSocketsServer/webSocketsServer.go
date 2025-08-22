@@ -93,23 +93,21 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	// Listen for messages
 	for {
 		fmt.Println("ENTERED THe LOOP")
-		//time.Sleep(time.Second)
 
-		//mutex.Lock()
+		mutex.Lock()
 		msgType, msg, err := conn.ReadMessage()
-		//mutex.Unlock()
-		//fmt.Println("RECIVED MSG: ", msg)
-		if isMp4(msg) {
-			mutex.Lock()
-			conn.WriteJSON(msg)
-			mutex.Unlock()
-			continue
-		}
+		mutex.Unlock()
 
 		if err != nil {
 			fmt.Println("Read error:", err)
 			fmt.Println("BREAKING")
 			break
+		}
+		if isMp4(msg) {
+			mutex.Lock()
+			conn.WriteJSON(msg)
+			mutex.Unlock()
+			continue
 		}
 
 		// Handle media forwarding
@@ -143,9 +141,9 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 
 	fmt.Println("ERRORHA:")
 
-	//mutex.Lock()
+	mutex.Lock()
 	stdin.Write(msg)
-	//mutex.Unlock()
+	mutex.Unlock()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -198,9 +196,9 @@ func forwardMediaToPeer(sender string, msgType int, msg []byte) {
 
 	fmt.Println("ABOUT TO READ")
 
-	//mutex.Lock()
+	mutex.Lock()
 	len, err := stdout.Read(outputMsg)
-	//mutex.Unlock()
+	mutex.Unlock()
 
 	fmt.Println("I RAD!")
 	if err != nil {
