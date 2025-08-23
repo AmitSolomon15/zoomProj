@@ -1,24 +1,20 @@
-import axios from "axios";
-
-
-
 function SendDataToSock(){
   console.log("IM HERE1");
   
    
   const username = document.querySelector(".name").innerText;
   const socket = new WebSocket(`wss://zoomproj-back-ws.onrender.com/ws?username=${username}`);
+  socket.binaryType = "arraybuffer";
 
   socket.addEventListener("message", (event)=>{
     console.log("CHANGES SAVED");
     console.log("RECIVING MP4 ",event.data);
-    return(
-      <div>
-      <video width="750" height="500" controls className="vid">
-        <source src={event.data} type="video/mp4" className="vidSrc"/>
-      </video>
-      </div>
-    );
+    const blob = new Blob([event.data], { type: "video/mp4" });
+    const url = URL.createObjectURL(blob);
+
+    const video = document.querySelector(".vid");
+    video.src = url;
+    video.play();
   });
   
   console.log("IM HERE2");

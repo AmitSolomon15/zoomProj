@@ -119,6 +119,9 @@ function SignedInUserPage(){
         {`${username}`}
       </div>
       <button onClick={decideFunc} className="btn">show all users</button>
+      <video width="750" height="500" controls className="vid">
+        
+      </video>
       </div>
         );
 }
