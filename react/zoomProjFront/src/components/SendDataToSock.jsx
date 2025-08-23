@@ -9,7 +9,7 @@ function SendDataToSock(){
   const mediaSource = new MediaSource();
   video.src = URL.createObjectURL(mediaSource);
 
-  let source = mediaSource.addSourceBuffer('video/mp4');;
+  let source = mediaSource.addSourceBuffer('video/mp4;codecs="avc1.42E01E,mp4a.40.2"');;
   
 
   socket.addEventListener("message", (event)=>{
