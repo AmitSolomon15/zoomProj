@@ -21,17 +21,17 @@ function SendDataToSock(){
     console.log("RECIVING MP4 ",event.data);
     const chunk = new Uint8Array(event.data);
 
-    if (!sourceBuffer.updating) {
+    if (!source.updating) {
       try {
-        sourceBuffer.appendBuffer(chunk);
+        source.appendBuffer(chunk);
       } catch (err) {
         console.error("appendBuffer failed:", err);
       }
       } 
     else {
-      sourceBuffer.addEventListener("updateend", () => {
+      source.addEventListener("updateend", () => {
         try {
-          sourceBuffer.appendBuffer(chunk);
+          source.appendBuffer(chunk);
         }
         catch(e) {}
       }, { once: true });
