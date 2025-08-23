@@ -73,9 +73,12 @@ func cmdInit() {
 	excmd := exec.Command("ffmpeg",
 		"-fflags", "+discardcorrupt",
 		"-f", "webm", // webm format
+		"-c:v", "libx264", // transcode VP8 → H.264
+		"-preset", "ultrafast", // (important for real-time)
 		"-ac", "2", // channels
 		"-i", "pipe:0", // read from stdin
-		//"-c:v", "h264", //video codec
+		"-c:a", "aac", // transcode Opus → AAC
+		"-b:a", "128k", // audio bitrate
 		"-ar", "48000", // sample rate
 		"-f", "mp4", // output format
 		"-movflags", "+frag_keyframe+empty_moov+default_base_moof", // fragmented MP4 for streaming

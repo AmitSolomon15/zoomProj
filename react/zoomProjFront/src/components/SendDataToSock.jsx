@@ -5,18 +5,33 @@ function SendDataToSock(){
   const username = document.querySelector(".name").innerText;
   const socket = new WebSocket(`wss://zoomproj-back-ws.onrender.com/ws?username=${username}`);
   socket.binaryType = "arraybuffer";
+  const video = document.querySelector(".vid");
+  const mediaSource = new mediaSource();
+  video.src = url;
+
+  let source = mediaSource.addSourceBuffer('video/mp4');;
+  
 
   socket.addEventListener("message", (event)=>{
     console.log("CHANGES SAVED");
     console.log("RECIVING MP4 ",event.data);
-    const blob = new Blob([event.data], { type: "video/mp4" });
-    const url = URL.createObjectURL(blob);
+    const chunk = new Uint8Array(event.data);
 
-    console.log(url);
-
-    const video = document.querySelector(".vid");
-    video.src = url;
-    setTimeout(()=>video.play(),3000);
+    if (!sourceBuffer.updating) {
+      try {
+        sourceBuffer.appendBuffer(chunk);
+      } catch (err) {
+        console.error("appendBuffer failed:", err);
+      }
+      } 
+    else {
+      sourceBuffer.addEventListener("updateend", () => {
+        try {
+          sourceBuffer.appendBuffer(chunk);
+        }
+        catch(e) {}
+      }, { once: true });
+    }
     
   });
   
