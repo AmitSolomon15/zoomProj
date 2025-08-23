@@ -11,7 +11,7 @@ function SendDataToSock(){
 
   socket.addEventListener("message", (event)=>{
     console.log("CHANGES SAVED");
-    console.log("RECIVING MP4 ",event);
+    console.log("RECIVING MP4 ",event.data);
     return(
       <div>
       <video width="750" height="500" controls className="vid">
