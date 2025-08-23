@@ -12,6 +12,8 @@ function SendDataToSock(){
     const blob = new Blob([event.data], { type: "video/mp4" });
     const url = URL.createObjectURL(blob);
 
+    console.log(url);
+
     const video = document.querySelector(".vid");
     video.src = url;
     video.play();
