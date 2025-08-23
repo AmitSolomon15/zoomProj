@@ -28,7 +28,7 @@ function EnterToApp(){
             <Link to="/SignInPage" style={linkStyle}>Sign In</Link>
         </nav>
         <Routes>
-            <Route path='/' element={<EnterToApp />} />
+            <Route path='/' element={<SignInPage />} />
             <Route path='/SignUpPage' element={<SignUpPage/>}/>
             <Route path='/SignInPage' element={<SignInPage/>}/>
             <Route path='/SignedInUserPage' element={<SignedInUserPage/>}/>
