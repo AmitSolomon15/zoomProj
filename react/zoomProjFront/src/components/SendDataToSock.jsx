@@ -6,7 +6,7 @@ function SendDataToSock(){
   const socket = new WebSocket(`wss://zoomproj-back-ws.onrender.com/ws?username=${username}`);
   socket.binaryType = "arraybuffer";
   const video = document.querySelector(".vid");
-  const mediaSource = new mediaSource();
+  const mediaSource = new MediaSource();
   video.src = URL.createObjectURL(mediaSource);
 
   let source = mediaSource.addSourceBuffer('video/mp4');;
