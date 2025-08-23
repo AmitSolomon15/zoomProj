@@ -16,7 +16,7 @@ function SendDataToSock(){
 
     const video = document.querySelector(".vid");
     video.src = url;
-    setTimeout(()=>video.play(),1000);
+    setTimeout(()=>video.play(),3000);
     
   });
   
