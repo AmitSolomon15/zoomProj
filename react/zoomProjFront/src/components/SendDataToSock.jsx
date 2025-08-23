@@ -19,7 +19,7 @@ function SendDataToSock(){
     console.log("CHANGES SAVED");
     console.log("RECIVING MP4 ",event.data);
     const chunk = new Uint8Array(event.data);
-    if (!sourceBuffer) return;
+    if (!source) return;
 
     if (!source.updating) {
       try {
