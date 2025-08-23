@@ -8,9 +8,13 @@ function SendDataToSock(){
   const video = document.querySelector(".vid");
   const mediaSource = new MediaSource();
   video.src = URL.createObjectURL(mediaSource);
-  mediaSource.readyState = 'open';
-  let source = mediaSource.addSourceBuffer('video/mp4;codecs="avc1.42E01E,mp4a.40.2"');;
   
+  let source;
+
+  mediaSource.addEventListener("sourceopen", () => {
+    // IMPORTANT: use codec string that matches ffmpeg output (H.264 + AAC in fragmented MP4)
+    sourceBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.42E01E, mp4a.40.2"');
+  });
 
   socket.addEventListener("message", (event)=>{
     console.log("CHANGES SAVED");
