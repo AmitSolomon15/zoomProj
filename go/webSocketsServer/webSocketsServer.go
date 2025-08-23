@@ -71,6 +71,7 @@ func connectMongo() {
 }
 func cmdInit() {
 	excmd := exec.Command("ffmpeg",
+		"-fflags", "+discardcorrupt",
 		"-f", "webm", // webm format
 		"-ac", "2", // channels
 		"-i", "pipe:0", // read from stdin
