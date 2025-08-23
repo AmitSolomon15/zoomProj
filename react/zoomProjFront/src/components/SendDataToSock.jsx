@@ -13,7 +13,7 @@ function SendDataToSock(){
 
   mediaSource.addEventListener("sourceopen", () => {
     // IMPORTANT: use codec string that matches ffmpeg output (H.264 + AAC in fragmented MP4)
-    sourceBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.42E01E, mp4a.40.2"');
+    source = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.42E01E, mp4a.40.2"');
   });
 
   socket.addEventListener("message", (event)=>{
