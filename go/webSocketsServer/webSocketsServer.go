@@ -125,7 +125,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		if isMp4(msg) {
 			mutex.Lock()
-			conn.WriteJSON(msg)
+			conn.WriteMessage(websocket.BinaryMessage, msg)
 			mutex.Unlock()
 			continue
 		}
