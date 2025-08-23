@@ -9,10 +9,9 @@ function SendDataToSock(){
   const mediaSource = new MediaSource();
   video.src = URL.createObjectURL(mediaSource);
   
-  let source;
+  var source;
 
   mediaSource.addEventListener("sourceopen", () => {
-    // IMPORTANT: use codec string that matches ffmpeg output (H.264 + AAC in fragmented MP4)
     source = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.42E01E, mp4a.40.2"');
   });
 
@@ -20,6 +19,7 @@ function SendDataToSock(){
     console.log("CHANGES SAVED");
     console.log("RECIVING MP4 ",event.data);
     const chunk = new Uint8Array(event.data);
+    if (!sourceBuffer) return;
 
     if (!source.updating) {
       try {
