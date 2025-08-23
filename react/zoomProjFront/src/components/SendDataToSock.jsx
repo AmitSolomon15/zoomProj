@@ -7,7 +7,7 @@ function SendDataToSock(){
   socket.binaryType = "arraybuffer";
   const video = document.querySelector(".vid");
   const mediaSource = new mediaSource();
-  video.src = url;
+  video.src = URL.createObjectURL(mediaSource);
 
   let source = mediaSource.addSourceBuffer('video/mp4');;
   
