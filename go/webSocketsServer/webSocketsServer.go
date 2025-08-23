@@ -78,7 +78,7 @@ func cmdInit() {
 		//"-c:v", "h264", //video codec
 		"-ar", "48000", // sample rate
 		"-f", "mp4", // output format
-		"-movflags", "frag_keyframe+empty_moov+default_base_moof", // fragmented MP4 for streaming
+		"-movflags", "+frag_keyframe+empty_moov+default_base_moof", // fragmented MP4 for streaming
 		"pipe:1", // write to stdout
 	)
 	stdin, _ = excmd.StdinPipe()
@@ -113,10 +113,11 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("ENTERED THe LOOP")
 
 		mutex.Lock()
-		msgType, msg, err := conn.ReadMessage()
+
+		_, msg, err := conn.ReadMessage()
 		mutex.Unlock()
 
-		fmt.Println("msgType is: ", msgType)
+		//fmt.Println("msgType is: ", msgType)
 
 		if err != nil {
 			fmt.Println("Read error:", err)
@@ -132,7 +133,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Handle media forwarding
 		fmt.Println("GOING FPRWORD")
-		forwardMediaToPeer(username, msgType, msg)
+		forwardMediaToPeer(username, msg)
 
 	}
 
@@ -157,7 +158,7 @@ func connectWS(w http.ResponseWriter, r *http.Request) (string, *websocket.Conn)
 	return username, conn
 }
 
-func forwardMediaToPeer(sender string, msgType int, msg []byte) {
+func forwardMediaToPeer(sender string, msg []byte) {
 
 	mutex.Lock()
 	stdin.Write(msg)
