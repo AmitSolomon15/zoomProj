@@ -80,6 +80,9 @@ func cmdInit() {
 		"-c:a", "aac", // transcode Opus → AAC
 		"-b:a", "128k", // audio bitrate
 		"-ar", "48000", // sample rate
+		"-profile:v", "baseline",
+		"-level", "3.1",
+		"-x264-params", "keyint=30:scenecut=0",
 		"-f", "mp4", // output format
 		"-movflags", "+frag_keyframe+empty_moov+default_base_moof", // fragmented MP4 for streaming
 		"pipe:1", // write to stdout
