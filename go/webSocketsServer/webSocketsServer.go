@@ -74,7 +74,7 @@ func cmdInit() {
 		"-fflags", "+discardcorrupt",
 		"-f", "webm", // webm format
 		"-i", "pipe:0", // read from stdin
-		//"-ac", "2", // channels
+		"-ac", "2", // channels
 		"-preset", "ultrafast", // (important for real-time)
 		"-c:v", "libx264", // transcode VP8 → H.264
 		"-c:a", "aac", // transcode Opus → AAC
