@@ -132,12 +132,14 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		if isMp4(msg) {
+			fmt.Println("MP4")
 			mutex.Lock()
 			//fmt.Println(string(msg))
 			conn.WriteMessage(websocket.BinaryMessage, msg)
 			mutex.Unlock()
 			continue
 		}
+		fmt.Println("NOt MP4")
 
 		// Handle media forwarding
 		fmt.Println("GOING FPRWORD")
@@ -249,6 +251,6 @@ func isMp4(msg []byte) bool {
 	}
 	header := msg[0:4]
 	invalidHeader := []byte{0x1A, 0x45, 0xDF, 0xA3}
-	fmt.Println("PRINT HEADER: ", header)
+	fmt.Println("PRINT HEADER: ", string(header))
 	return !(bytes.Equal(header, invalidHeader) || header[0] == invalidHeader[3])
 }
