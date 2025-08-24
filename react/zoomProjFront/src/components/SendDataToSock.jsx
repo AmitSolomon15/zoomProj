@@ -21,6 +21,10 @@ function SendDataToSock(){
     console.log("RECIVING MP4 ",event.data);
     const chunk = new Uint8Array(event.data);
     if (!source) return;
+    if (mediaSource.readyState != 'open'){
+      console.log("MEDIA SOURCE CLOSED!!!");
+      return;
+    }
 
     if (!source.updating) {
       try {
@@ -29,7 +33,7 @@ function SendDataToSock(){
       } catch (err) {
         console.error("appendBuffer failed:", err);
       }
-      } 
+    } 
     else {
       source.addEventListener("updateend", () => {
         try {
