@@ -177,7 +177,7 @@ func forwardMediaToPeer(sender string, msg []byte) {
 
 	collection := client.Database("users").Collection("usersInCall")
 
-	fmt.Println(sender)
+	//fmt.Println(sender)
 
 	// Find the call document for the sender
 	filter := bson.M{
@@ -198,9 +198,9 @@ func forwardMediaToPeer(sender string, msg []byte) {
 		return
 	}
 
-	fmt.Println("result: ", result)
-	fmt.Println("result2: ", result.User1)
-	fmt.Println("result3: ", result.User2)
+	//fmt.Println("result: ", result)
+	//fmt.Println("result2: ", result.User1)
+	//fmt.Println("result3: ", result.User2)
 
 	// Determine the receiver
 	var receiver string
@@ -217,24 +217,23 @@ func forwardMediaToPeer(sender string, msg []byte) {
 		fmt.Println("Receiver not connected:", receiver)
 		return
 	}
+
 	receiverConn := clients[receiver].Conn
 
-	outputMsg := make([]byte, 1024)
+	//outputMsg := make([]byte, 1024)
 
 	fmt.Println("ABOUT TO READ")
 
 	select {
 	case outputMsg := <-ffmpegOutChan:
+		mutex.Lock()
 		receiverConn.WriteMessage(websocket.BinaryMessage, outputMsg)
+		mutex.Unlock()
 	default:
 
 	}
 
 	fmt.Println("I RAD!")
-
-	mutex.Lock()
-	err = receiverConn.WriteMessage(websocket.BinaryMessage, outputMsg)
-	mutex.Unlock()
 
 	if err != nil {
 		fmt.Println("Error forwarding to", receiver, ":", err)
