@@ -13,7 +13,7 @@ function SendDataToSock(){
 
   mediaSource.addEventListener("sourceopen", () => {
     console.log("MEDIA SOURCE OPENED");
-    source = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.42E01E, mp4a.40.2"');
+    source = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.4d401e, mp4a.40.2"');
     video.play();
   });
 
