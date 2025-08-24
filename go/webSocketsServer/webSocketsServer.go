@@ -200,10 +200,6 @@ func forwardMediaToPeer(sender string, msg []byte) {
 		return
 	}
 
-	//fmt.Println("result: ", result)
-	//fmt.Println("result2: ", result.User1)
-	//fmt.Println("result3: ", result.User2)
-
 	// Determine the receiver
 	var receiver string
 	if result.User1 == sender {
@@ -252,5 +248,5 @@ func isMp4(msg []byte) bool {
 	header := msg[0:4]
 	invalidHeader := []byte{0x1A, 0x45, 0xDF, 0xA3}
 	fmt.Println("PRINT HEADER: ", header)
-	return !(bytes.Equal(header, invalidHeader) || header[0] == invalidHeader[3])
+	return !(bytes.Equal(header, invalidHeader) || header[0] == invalidHeader[3] || header[0] >= 0x5A)
 }
