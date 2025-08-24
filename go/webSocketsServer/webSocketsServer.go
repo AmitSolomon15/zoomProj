@@ -85,7 +85,7 @@ func cmdInit() {
 		"-x264-params", "keyint=30:scenecut=0",
 		"-f", "mp4", // output format
 		"-movflags", "+frag_keyframe+empty_moov+default_base_moof", // fragmented MP4 for streaming
-		"test.mp4", // write to stdout
+		"pipe:1", // write to stdout
 	)
 	stdin, _ = excmd.StdinPipe()
 	stdout, _ = excmd.StdoutPipe()
