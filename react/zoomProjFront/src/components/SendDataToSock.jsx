@@ -13,8 +13,7 @@ function SendDataToSock(){
 
   mediaSource.addEventListener("sourceopen", () => {
     console.log("MEDIA SOURCE OPENED");
-    source = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.4d401e, mp4a.40.2"');
-    video.play();
+    source = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.42E01E, mp4a.40.2"');
   });
 
   socket.addEventListener("message", (event)=>{
@@ -26,6 +25,7 @@ function SendDataToSock(){
     if (!source.updating) {
       try {
         source.appendBuffer(chunk);
+        video.open();
       } catch (err) {
         console.error("appendBuffer failed:", err);
       }
@@ -34,6 +34,7 @@ function SendDataToSock(){
       source.addEventListener("updateend", () => {
         try {
           source.appendBuffer(chunk);
+          video.open();
         }
         catch(e) {}
       }, { once: true });
