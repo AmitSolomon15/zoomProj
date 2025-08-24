@@ -251,6 +251,6 @@ func isMp4(msg []byte) bool {
 	}
 	header := msg[0:4]
 	invalidHeader := []byte{0x1A, 0x45, 0xDF, 0xA3}
-	fmt.Println("PRINT HEADER: ", string(header))
+	fmt.Println("PRINT HEADER: ", header)
 	return !(bytes.Equal(header, invalidHeader) || header[0] == invalidHeader[3])
 }
