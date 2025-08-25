@@ -35,6 +35,7 @@ var (
 	stdout io.ReadCloser
 	//cmd    *exec.Cmd = cmdInit()
 	ffmpegOutChan = make(chan []byte, 1024)
+	isMP4Stream   *bool
 )
 
 // Upgrader is used to upgrade HTTP connections to WebSocket connections.
