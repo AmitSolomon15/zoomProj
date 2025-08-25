@@ -247,11 +247,12 @@ func isMp4(msg []byte) bool {
 	}
 
 	//check if header is webm
-	fmt.Println(msg[0:4])
+	fmt.Println("first4 ", msg[0:4])
+	fmt.Println("second4 ", msg[4:8])
 	if bytes.Equal(msg[0:4], []byte{0x1A, 0x45, 0xDF, 0xA3}) {
 		*isMP4Stream = false
 	} else {
-		header := string(msg[0:4])
+		header := string(msg[0:8])
 		if header == "ftyp" || header == "moov" || header == "moof" || header == "mdat" {
 			*isMP4Stream = true
 		}
