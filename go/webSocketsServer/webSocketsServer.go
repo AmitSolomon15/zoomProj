@@ -106,6 +106,7 @@ func cmdInit() {
 			// copy to avoid re-use of buf
 			data := make([]byte, n)
 			copy(data, buf[:n])
+			fmt.Println("buffer ", string(data))
 			ffmpegOutChan <- data
 		}
 	}()
