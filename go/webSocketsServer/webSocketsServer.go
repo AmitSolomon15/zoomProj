@@ -47,6 +47,7 @@ var upgrader = websocket.Upgrader{
 
 func main() {
 	fmt.Println("ENTERED MAIN")
+	*isMP4Stream = false
 	connectMongo()
 	cmdInit()
 	http.HandleFunc("/ws", wsHandler)
@@ -254,9 +255,7 @@ func isMp4(msg []byte) bool {
 			*isMP4Stream = true
 		}
 	}
-	if isMP4Stream == nil {
-		return false
-	}
+
 	return *isMP4Stream
 	/*
 		header := msg[0:4]
