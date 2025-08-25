@@ -243,9 +243,7 @@ func isMp4(msg []byte) bool {
 	if len(msg) < 12 {
 		return false // too short to be valid
 	}
-	if isMP4Stream == nil {
-		return false
-	}
+
 	//check if header is webm
 	if bytes.Equal(msg[0:4], []byte{0x1A, 0x45, 0xDF, 0xA3}) {
 		*isMP4Stream = false
@@ -255,7 +253,9 @@ func isMp4(msg []byte) bool {
 			*isMP4Stream = true
 		}
 	}
-
+	if isMP4Stream == nil {
+		return false
+	}
 	return *isMP4Stream
 	/*
 		header := msg[0:4]
