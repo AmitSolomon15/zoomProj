@@ -50,8 +50,6 @@ func main() {
 	connectMongo()
 	cmdInit()
 	http.HandleFunc("/ws", wsHandler)
-	//http.HandleFunc("/wsConn", wsConnectHandler)
-	//fmt.Println("WebSocket server started on :8080")
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -86,7 +84,7 @@ func cmdInit() {
 		"-x264-params", "keyint=30:scenecut=0",
 		"-f", "mp4", // output format
 		"-movflags", "+frag_keyframe+empty_moov+default_base_moof", // fragmented MP4 for streaming
-		"pipe:1", // write to stdout
+		"output.mp4", // write to stdout
 	)
 	stdin, _ = excmd.StdinPipe()
 	stdout, _ = excmd.StdoutPipe()
