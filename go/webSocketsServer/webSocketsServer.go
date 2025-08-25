@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"errors"
 
 	//"encoding/json"
 	"io"
@@ -19,6 +20,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	//"golang.org/x/crypto/openpgp/errors"
 )
 
 type Client struct {
@@ -176,6 +178,48 @@ func forwardMediaToPeer(sender string, msg []byte) {
 	mutex.Unlock()
 	fmt.Println("WRITTEN ", n)
 
+	receiver, err := findReciever(sender)
+	if err != nil {
+		fmt.Println("ERROR ", err)
+		return
+	}
+
+	receiverConn := clients[receiver].Conn
+
+	fmt.Println("ABOUT TO READ")
+
+	go func() {
+		for chunk := range ffmpegOutChan {
+			mutex.Lock()
+			err := receiverConn.WriteMessage(websocket.BinaryMessage, chunk)
+			mutex.Unlock()
+			if err != nil {
+				fmt.Println("write error to receiver:", err)
+				return
+			}
+
+			fmt.Println("I RAD!")
+
+			fmt.Println("SENT MESSAGE")
+		}
+	}()
+
+}
+
+func isMp4(msg []byte) bool {
+	fmt.Println("ENTERED ISMP")
+	if len(msg) < 12 {
+		return false // too short to be valid
+	}
+
+	header := msg[0:4]
+	invalidHeader := []byte{0x1A, 0x45, 0xDF, 0xA3}
+	fmt.Println("PRINT HEADER: ", header)
+	return !(bytes.Equal(header, invalidHeader) || header[0] == invalidHeader[3] || header[0] >= 0x5A)
+
+}
+
+func findReciever(sender string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -199,7 +243,7 @@ func forwardMediaToPeer(sender string, msg []byte) {
 	err := collection.FindOne(ctx, filter).Decode(&result)
 	if err != nil {
 		fmt.Println("No call found for user:", sender)
-		return
+		return "", errors.New("found no call")
 	}
 
 	// Determine the receiver
@@ -215,37 +259,7 @@ func forwardMediaToPeer(sender string, msg []byte) {
 	fmt.Println("user ", receiver, " connection: ", clients[receiver])
 	if clients[receiver] == nil {
 		fmt.Println("Receiver not connected:", receiver)
-		return
+		return "", errors.New("2nd user not found")
 	}
-
-	receiverConn := clients[receiver].Conn
-
-	fmt.Println("ABOUT TO READ")
-
-	select {
-	case outputMsg := <-ffmpegOutChan:
-		mutex.Lock()
-		receiverConn.WriteMessage(websocket.BinaryMessage, outputMsg)
-		mutex.Unlock()
-	default:
-
-	}
-
-	fmt.Println("I RAD!")
-
-	fmt.Println("SENT MESSAGE")
-
-}
-
-func isMp4(msg []byte) bool {
-	fmt.Println("ENTERED ISMP")
-	if len(msg) < 12 {
-		return false // too short to be valid
-	}
-
-	header := msg[0:4]
-	invalidHeader := []byte{0x1A, 0x45, 0xDF, 0xA3}
-	fmt.Println("PRINT HEADER: ", header)
-	return !(bytes.Equal(header, invalidHeader) || header[0] == invalidHeader[3] || header[0] >= 0x5A)
-
+	return receiver, nil
 }
