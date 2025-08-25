@@ -245,17 +245,17 @@ func isMp4(msg []byte) bool {
 	}
 	if isMP4Stream == nil {
 		return false
+	}
+	//check if header is webm
+	if bytes.Equal(msg[0:4], []byte{0x1A, 0x45, 0xDF, 0xA3}) {
+		*isMP4Stream = false
 	} else {
-		//check if header is webm
-		if bytes.Equal(msg[0:4], []byte{0x1A, 0x45, 0xDF, 0xA3}) {
-			*isMP4Stream = false
-		} else {
-			header := string(msg[4:8])
-			if header == "ftyp" || header == "moov" || header == "moof" || header == "mdat" {
-				*isMP4Stream = true
-			}
+		header := string(msg[4:8])
+		if header == "ftyp" || header == "moov" || header == "moof" || header == "mdat" {
+			*isMP4Stream = true
 		}
 	}
+
 	return *isMP4Stream
 	/*
 		header := msg[0:4]
