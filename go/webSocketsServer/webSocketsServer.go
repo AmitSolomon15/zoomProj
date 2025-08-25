@@ -47,6 +47,7 @@ var upgrader = websocket.Upgrader{
 
 func main() {
 	fmt.Println("ENTERED MAIN")
+	isMP4Stream = new(bool)
 	*isMP4Stream = false
 	connectMongo()
 	cmdInit()
