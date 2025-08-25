@@ -29,7 +29,7 @@ function SendDataToSock(){
     if (!source.updating) {
       try {
         source.appendBuffer(chunk);
-        video.load();
+        //video.load();
         video.play();
       } catch (err) {
         console.error("appendBuffer failed:", err);
@@ -39,7 +39,7 @@ function SendDataToSock(){
       source.addEventListener("updateend", () => {
         try {
           source.appendBuffer(chunk);
-          video.load();
+          //video.load();
           video.play();
         }
         catch(e) {}

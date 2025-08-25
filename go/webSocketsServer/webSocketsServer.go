@@ -233,9 +233,6 @@ func forwardMediaToPeer(sender string, msg []byte) {
 
 	fmt.Println("I RAD!")
 
-	if err != nil {
-		fmt.Println("Error forwarding to", receiver, ":", err)
-	}
 	fmt.Println("SENT MESSAGE")
 
 }
