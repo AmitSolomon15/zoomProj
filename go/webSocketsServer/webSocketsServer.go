@@ -172,9 +172,11 @@ func connectWS(w http.ResponseWriter, r *http.Request) (string, *websocket.Conn)
 
 func forwardMediaToPeer(sender string, msg []byte) {
 
+	fmt.Println("SENDING STDIN")
 	mutex.Lock()
-	stdin.Write(msg)
+	n, _ := stdin.Write(msg)
 	mutex.Unlock()
+	fmt.Println("WRITTEN ", n)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -219,8 +221,6 @@ func forwardMediaToPeer(sender string, msg []byte) {
 	}
 
 	receiverConn := clients[receiver].Conn
-
-	//outputMsg := make([]byte, 1024)
 
 	fmt.Println("ABOUT TO READ")
 
