@@ -97,7 +97,7 @@ func cmdInit() {
 		buf := make([]byte, 1024)
 		for {
 			n, err := stdout.Read(buf)
-			//fmt.Println(string(buf))
+			fmt.Println(string(buf))
 			if err != nil {
 				fmt.Println("ffmpeg stdout error:", err)
 				close(ffmpegOutChan)
