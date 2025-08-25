@@ -243,8 +243,24 @@ func isMp4(msg []byte) bool {
 	if len(msg) < 12 {
 		return false // too short to be valid
 	}
-	header := msg[0:4]
-	invalidHeader := []byte{0x1A, 0x45, 0xDF, 0xA3}
-	fmt.Println("PRINT HEADER: ", header)
-	return !(bytes.Equal(header, invalidHeader) || header[0] == invalidHeader[3] || header[0] >= 0x5A)
+	if isMP4Stream == nil {
+		return false
+	} else {
+		//check if header is webm
+		if bytes.Equal(msg[0:4], []byte{0x1A, 0x45, 0xDF, 0xA3}) {
+			*isMP4Stream = false
+		} else {
+			header := string(msg[4:8])
+			if header == "ftyp" || header == "moov" || header == "moof" || header == "mdat" {
+				*isMP4Stream = true
+			}
+		}
+	}
+	return *isMP4Stream
+	/*
+		header := msg[0:4]
+		invalidHeader := []byte{0x1A, 0x45, 0xDF, 0xA3}
+		fmt.Println("PRINT HEADER: ", header)
+		return !(bytes.Equal(header, invalidHeader) || header[0] == invalidHeader[3] || header[0] >= 0x5A)
+	*/
 }
