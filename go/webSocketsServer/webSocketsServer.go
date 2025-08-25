@@ -245,6 +245,7 @@ func isMp4(msg []byte) bool {
 	}
 
 	//check if header is webm
+	fmt.Println(msg[0:4])
 	if bytes.Equal(msg[0:4], []byte{0x1A, 0x45, 0xDF, 0xA3}) {
 		*isMP4Stream = false
 	} else {
