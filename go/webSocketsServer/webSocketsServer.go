@@ -251,7 +251,7 @@ func isMp4(msg []byte) bool {
 	if bytes.Equal(msg[0:4], []byte{0x1A, 0x45, 0xDF, 0xA3}) {
 		*isMP4Stream = false
 	} else {
-		header := string(msg[4:8])
+		header := string(msg[0:4])
 		if header == "ftyp" || header == "moov" || header == "moof" || header == "mdat" {
 			*isMP4Stream = true
 		}
