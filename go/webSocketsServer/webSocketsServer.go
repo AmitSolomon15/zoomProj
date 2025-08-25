@@ -35,7 +35,6 @@ var (
 	stdout io.ReadCloser
 	//cmd    *exec.Cmd = cmdInit()
 	ffmpegOutChan = make(chan []byte, 1024)
-	isMP4Stream   *bool
 )
 
 // Upgrader is used to upgrade HTTP connections to WebSocket connections.
@@ -47,8 +46,7 @@ var upgrader = websocket.Upgrader{
 
 func main() {
 	fmt.Println("ENTERED MAIN")
-	isMP4Stream = new(bool)
-	*isMP4Stream = false
+
 	connectMongo()
 	cmdInit()
 	http.HandleFunc("/ws", wsHandler)
@@ -246,23 +244,9 @@ func isMp4(msg []byte) bool {
 		return false // too short to be valid
 	}
 
-	//check if header is webm
-	fmt.Println("first4 ", msg[0:4])
-	fmt.Println("second4 ", msg[4:8])
-	if bytes.Equal(msg[0:4], []byte{0x1A, 0x45, 0xDF, 0xA3}) {
-		*isMP4Stream = false
-	} else {
-		header := string(msg[4:8])
-		if header == "ftyp" || header == "moov" || header == "moof" || header == "mdat" {
-			*isMP4Stream = true
-		}
-	}
+	header := msg[0:4]
+	invalidHeader := []byte{0x1A, 0x45, 0xDF, 0xA3}
+	fmt.Println("PRINT HEADER: ", header)
+	return !(bytes.Equal(header, invalidHeader) || header[0] == invalidHeader[3] || header[0] >= 0x5A)
 
-	return *isMP4Stream
-	/*
-		header := msg[0:4]
-		invalidHeader := []byte{0x1A, 0x45, 0xDF, 0xA3}
-		fmt.Println("PRINT HEADER: ", header)
-		return !(bytes.Equal(header, invalidHeader) || header[0] == invalidHeader[3] || header[0] >= 0x5A)
-	*/
 }
