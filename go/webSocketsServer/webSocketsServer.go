@@ -187,58 +187,22 @@ func connectWS(w http.ResponseWriter, r *http.Request) (string, *websocket.Conn)
 	return username, conn
 }
 
-/*
-func forwardMediaToPeer(sender string, msg []byte) {
-
-	fmt.Println("SENDING STDIN")
-	mutex.Lock()
-	n, _ := stdin.Write(msg)
-	mutex.Unlock()
-	fmt.Println("WRITTEN ", n)
-
-
-	receiver, err := findReciever(sender)
-	if err != nil {
-		fmt.Println("ERROR ", err)
-		return
-	}
-
-	receiverConn := clients[receiver].Conn
-
-
-	fmt.Println("ABOUT TO READ")
-	go func() {
-		fmt.Println("ENTER FUNC 2")
-		for chunk := range ffmpegOutChan {
-			fmt.Println("ENTER FUNC 2 LOOOP")
-			fmt.Println("CHUNK: ", chunk)
-			mutex.Lock()
-			err := receiverConn.WriteMessage(websocket.BinaryMessage, chunk)
-			mutex.Unlock()
-			if err != nil {
-				fmt.Println("write error to receiver:", err)
-				return
-			}
-
-			fmt.Println("I RAD!")
-
-			fmt.Println("SENT MESSAGE")
-		}
-	}()
-
-}*/
-
 func isMp4(msg []byte) bool {
-	fmt.Println("ENTERED ISMP")
 	if len(msg) < 12 {
-		return false // too short to be valid
+		return false
 	}
 
-	header := msg[0:4]
-	invalidHeader := []byte{0x1A, 0x45, 0xDF, 0xA3}
-	fmt.Println("PRINT HEADER: ", header)
-	return !(bytes.Equal(header, invalidHeader) || header[0] == invalidHeader[3] || header[0] >= 0x5A)
+	// WebM magic header
+	if bytes.Equal(msg[:4], []byte{0x1A, 0x45, 0xDF, 0xA3}) {
+		return false
+	}
 
+	// MP4 usually has "ftyp" at offset 4
+	if string(msg[4:8]) == "ftyp" {
+		return true
+	}
+
+	return false
 }
 
 func findReciever(sender string) (string, error) {
