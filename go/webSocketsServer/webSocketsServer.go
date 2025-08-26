@@ -102,7 +102,7 @@ func cmdInit() {
 			fmt.Println("buffer ", string(buf))
 			if err != nil {
 				fmt.Println("ffmpeg stdout error:", err)
-				//close(ffmpegOutChan)
+
 				return
 			}
 			// copy to avoid re-use of buf
@@ -120,12 +120,13 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	username, conn := connectWS(w, r)
 	fmt.Printf("User %s connected\n", username)
 
+	forwordToReciver(username)
+
 	// Listen for messages
 	for {
 		fmt.Println("ENTERED THe LOOP")
 
 		mutex.Lock()
-
 		_, msg, err := conn.ReadMessage()
 		mutex.Unlock()
 
@@ -148,8 +149,13 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Handle media forwarding
 		fmt.Println("GOING FPRWORD")
-		forwardMediaToPeer(username, msg)
-
+		mutex.Lock()
+		_, err = stdin.Write(msg)
+		mutex.Unlock()
+		if err != nil {
+			fmt.Println("Error writing to ffmpeg stdin:", err)
+			break
+		}
 	}
 
 	// Clean up on disconnect
@@ -173,6 +179,7 @@ func connectWS(w http.ResponseWriter, r *http.Request) (string, *websocket.Conn)
 	return username, conn
 }
 
+/*
 func forwardMediaToPeer(sender string, msg []byte) {
 
 	fmt.Println("SENDING STDIN")
@@ -180,6 +187,7 @@ func forwardMediaToPeer(sender string, msg []byte) {
 	n, _ := stdin.Write(msg)
 	mutex.Unlock()
 	fmt.Println("WRITTEN ", n)
+
 
 	receiver, err := findReciever(sender)
 	if err != nil {
@@ -189,8 +197,8 @@ func forwardMediaToPeer(sender string, msg []byte) {
 
 	receiverConn := clients[receiver].Conn
 
+
 	fmt.Println("ABOUT TO READ")
-	//fmt.Println("chanel: ", <-ffmpegOutChan)
 	go func() {
 		fmt.Println("ENTER FUNC 2")
 		for chunk := range ffmpegOutChan {
@@ -210,7 +218,7 @@ func forwardMediaToPeer(sender string, msg []byte) {
 		}
 	}()
 
-}
+}*/
 
 func isMp4(msg []byte) bool {
 	fmt.Println("ENTERED ISMP")
@@ -268,4 +276,24 @@ func findReciever(sender string) (string, error) {
 		return "", errors.New("2nd user not found")
 	}
 	return receiver, nil
+}
+
+func forwordToReciver(sender string) {
+	receiver, err := findReciever(sender)
+	if err != nil {
+		fmt.Println("ERROR ", err)
+		return
+	}
+	receiverConn := clients[receiver].Conn
+	go func() {
+		for chunk := range ffmpegOutChan {
+			mutex.Lock()
+			err := receiverConn.WriteMessage(websocket.BinaryMessage, chunk)
+			mutex.Unlock()
+			if err != nil {
+				fmt.Println("write error to receiver:", err)
+				return
+			}
+		}
+	}()
 }
