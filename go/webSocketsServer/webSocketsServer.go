@@ -286,7 +286,9 @@ func forwordToReciver(sender string) {
 	}
 	receiverConn := clients[receiver].Conn
 	go func() {
+
 		for chunk := range ffmpegOutChan {
+			fmt.Println("CHUNK: ", chunk)
 			mutex.Lock()
 			err := receiverConn.WriteMessage(websocket.BinaryMessage, chunk)
 			mutex.Unlock()
