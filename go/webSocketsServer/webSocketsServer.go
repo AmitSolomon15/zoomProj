@@ -94,6 +94,7 @@ func cmdInit() {
 	excmd.Start()
 
 	go func() {
+		fmt.Println("ENTERED FIRST FUNC")
 		buf := make([]byte, 1024)
 		for {
 			n, err := stdout.Read(buf)
@@ -108,6 +109,7 @@ func cmdInit() {
 			copy(data, buf[:n])
 			fmt.Println("buffer ", string(data))
 			ffmpegOutChan <- data
+
 		}
 	}()
 }
