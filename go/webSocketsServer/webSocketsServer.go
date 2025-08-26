@@ -72,23 +72,27 @@ func connectMongo() {
 }
 func cmdInit() {
 	excmd := exec.Command("ffmpeg",
-		"-fflags", "+discardcorrupt",
-		"-f", "webm", // webm format
+		"-fflags", "nobuffer+discardcorrupt",
+		"-flags", "low_delay",
+		"-probesize", "32",
+		"-analyzeduration", "0",
+		"-f", "webm", // input format
 		"-i", "pipe:0", // read from stdin
-		"-ac", "2", // channels
-		"-preset", "ultrafast", // (important for real-time)
-		"-c:v", "libx264", // transcode VP8 → H.264
-		"-c:a", "aac", // transcode Opus → AAC
-		"-b:a", "128k", // audio bitrate
-		"-ar", "48000", // sample rate
+		"-ac", "2",
+		"-preset", "ultrafast",
+		"-c:v", "libx264",
+		"-c:a", "aac",
+		"-b:a", "128k",
+		"-ar", "48000",
 		"-profile:v", "baseline",
 		"-level", "3.1",
-		"-x264-params", "keyint=30:scenecut=0",
+		"-x264-params", "keyint=10:scenecut=0", // shorter GOP -> more keyframes
 		"-flush_packets", "1",
-		"-g", "10",
-		"-f", "mp4", // output format
-		"-movflags", "+frag_keyframe+empty_moov+default_base_moof+delay_moov", // fragmented MP4 for streaming
-		"pipe:1", // write to stdout
+		"-g", "10", // force keyframe interval
+		"-vsync", "0",
+		"-f", "mp4",
+		"-movflags", "+frag_keyframe+empty_moov+default_base_moof+delay_moov",
+		"pipe:1",
 	)
 	stdin, _ = excmd.StdinPipe()
 	stdout, _ = excmd.StdoutPipe()
@@ -152,7 +156,8 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		// Handle media forwarding
 		fmt.Println("GOING FPRWORD")
 		mutex.Lock()
-		_, err = stdin.Write(msg)
+		numOfBytes, err := stdin.Write(msg)
+		fmt.Println("size of msg: ", numOfBytes)
 		mutex.Unlock()
 		fmt.Println("READ")
 		if err != nil {
