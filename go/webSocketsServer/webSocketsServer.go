@@ -84,8 +84,10 @@ func cmdInit() {
 		"-profile:v", "baseline",
 		"-level", "3.1",
 		"-x264-params", "keyint=30:scenecut=0",
+		"-flush_packets", "1",
+		"-g", "10",
 		"-f", "mp4", // output format
-		"-movflags", "+frag_keyframe+empty_moov+default_base_moof", // fragmented MP4 for streaming
+		"-movflags", "+frag_keyframe+empty_moov+default_base_moof+delay_moov", // fragmented MP4 for streaming
 		"pipe:1", // write to stdout
 	)
 	stdin, _ = excmd.StdinPipe()
