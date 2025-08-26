@@ -143,6 +143,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("BREAKING")
 			break
 		}
+
 		if isMp4(msg) {
 			fmt.Println("MP4")
 			mutex.Lock()
@@ -150,20 +151,21 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			conn.WriteMessage(websocket.BinaryMessage, msg)
 			mutex.Unlock()
 			continue
-		}
-		fmt.Println("NOt MP4")
+		} else if isWebM(msg) {
 
-		// Handle media forwarding
-		fmt.Println("GOING FPRWORD")
-		mutex.Lock()
-		numOfBytes, err := stdin.Write(msg)
-		fmt.Println("size of msg: ", numOfBytes)
-		mutex.Unlock()
-		fmt.Println("READ")
-		if err != nil {
-			fmt.Println("Error writing to ffmpeg stdin:", err)
-			break
+			// Handle media forwarding
+			fmt.Println("GOING FPRWORD")
+			mutex.Lock()
+			numOfBytes, err := stdin.Write(msg)
+			fmt.Println("size of msg: ", numOfBytes)
+			mutex.Unlock()
+			fmt.Println("READ")
+			if err != nil {
+				fmt.Println("Error writing to ffmpeg stdin:", err)
+				break
+			}
 		}
+
 	}
 
 	// Clean up on disconnect
@@ -198,11 +200,16 @@ func isMp4(msg []byte) bool {
 	}
 
 	// MP4 usually has "ftyp" at offset 4
-	if string(msg[4:8]) == "ftyp" {
+	format := string(msg[4:8])
+	if format == "ftyp" || format == "isom" || format == "moov" || format == "mdat" || format == "moof" || format == "udta" {
 		return true
 	}
 
 	return false
+}
+
+func isWebM(msg []byte) bool {
+	return len(msg) >= 4 && bytes.Equal(msg[0:4], []byte{0x1A, 0x45, 0xDF, 0xA3})
 }
 
 func findReciever(sender string) (string, error) {
