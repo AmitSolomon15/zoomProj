@@ -152,6 +152,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		mutex.Lock()
 		_, err = stdin.Write(msg)
 		mutex.Unlock()
+		fmt.Println("READ")
 		if err != nil {
 			fmt.Println("Error writing to ffmpeg stdin:", err)
 			break
@@ -279,6 +280,7 @@ func findReciever(sender string) (string, error) {
 }
 
 func forwordToReciver(sender string) {
+	fmt.Println("forwordToReciver")
 	receiver, err := findReciever(sender)
 	if err != nil {
 		fmt.Println("ERROR ", err)
