@@ -189,7 +189,7 @@ func forwardMediaToPeer(sender string, msg []byte) {
 	receiverConn := clients[receiver].Conn
 
 	fmt.Println("ABOUT TO READ")
-	fmt.Println("chanel: ", <-ffmpegOutChan)
+	//fmt.Println("chanel: ", <-ffmpegOutChan)
 	go func() {
 		fmt.Println("chanel: ", string(<-ffmpegOutChan))
 		for chunk := range ffmpegOutChan {
