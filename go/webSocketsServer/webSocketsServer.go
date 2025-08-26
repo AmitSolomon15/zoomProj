@@ -191,7 +191,7 @@ func forwardMediaToPeer(sender string, msg []byte) {
 	fmt.Println("ABOUT TO READ")
 	//fmt.Println("chanel: ", <-ffmpegOutChan)
 	go func() {
-		fmt.Println("chanel: ", string(<-ffmpegOutChan))
+		fmt.Println("ENTER FUNC 2")
 		for chunk := range ffmpegOutChan {
 			fmt.Println("CHUNK: ", chunk)
 			mutex.Lock()
