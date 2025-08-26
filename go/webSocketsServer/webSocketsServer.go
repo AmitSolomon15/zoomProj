@@ -50,7 +50,7 @@ func main() {
 	fmt.Println("ENTERED MAIN")
 
 	connectMongo()
-	cmdInit()
+	//cmdInit()
 	http.HandleFunc("/ws", wsHandler)
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -115,6 +115,9 @@ func cmdInit() {
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
+	if stdin == nil {
+		cmdInit()
+	}
 
 	username, conn := connectWS(w, r)
 	fmt.Printf("User %s connected\n", username)
