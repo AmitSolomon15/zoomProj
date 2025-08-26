@@ -97,6 +97,7 @@ func cmdInit() {
 		fmt.Println("ENTERED FIRST FUNC")
 		buf := make([]byte, 1024)
 		for {
+			fmt.Println("ENTERED FIRST FUNC LOOOP")
 			n, err := stdout.Read(buf)
 			fmt.Println("buffer ", string(buf))
 			if err != nil {
@@ -193,6 +194,7 @@ func forwardMediaToPeer(sender string, msg []byte) {
 	go func() {
 		fmt.Println("ENTER FUNC 2")
 		for chunk := range ffmpegOutChan {
+			fmt.Println("ENTER FUNC 2 LOOOP")
 			fmt.Println("CHUNK: ", chunk)
 			mutex.Lock()
 			err := receiverConn.WriteMessage(websocket.BinaryMessage, chunk)
