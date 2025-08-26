@@ -101,7 +101,7 @@ func cmdInit() {
 			fmt.Println("buffer ", string(buf))
 			if err != nil {
 				fmt.Println("ffmpeg stdout error:", err)
-				close(ffmpegOutChan)
+				//close(ffmpegOutChan)
 				return
 			}
 			// copy to avoid re-use of buf
