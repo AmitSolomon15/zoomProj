@@ -117,7 +117,7 @@ func cmdInit() {
 			// copy to avoid re-use of buf
 			data := make([]byte, n)
 			copy(data, buf[:n])
-			fmt.Println("buffer ", string(data))
+			//fmt.Println("buffer2 ", string(data))
 			ffmpegOutChan <- data
 
 		}
@@ -314,6 +314,7 @@ func handleIncoming(data []byte) {
 			clusterBuf.Write(data)
 			if clusterBuf.Len() >= clusterSize {
 				// We have a full cluster → send to ffmpeg
+				fmt.Println("cluster data: ", clusterBuf.Bytes())
 				stdin.Write(clusterBuf.Bytes())
 				insideCluster = false
 				clusterBuf.Reset()
