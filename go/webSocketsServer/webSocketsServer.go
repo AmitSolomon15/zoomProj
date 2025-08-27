@@ -105,7 +105,7 @@ func cmdInit() {
 		for {
 			fmt.Println("ENTERED FIRST FUNC LOOOP")
 			n, err := stdout.Read(buf)
-			fmt.Println("buffer ", string(buf))
+			fmt.Println("buffer")
 			if err != nil {
 				fmt.Println("ffmpeg stdout error:", err)
 
@@ -152,7 +152,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			mutex.Unlock()
 			continue
 		} else {
-			fmt.Println(isMp4(msg))
+			fmt.Println(isWebM(msg))
 			// Handle media forwarding
 			fmt.Println("GOING FPRWORD")
 			mutex.Lock()
@@ -268,7 +268,7 @@ func forwordToReciver(sender string) {
 	receiverConn := clients[receiver].Conn
 	go func() {
 		for chunk := range ffmpegOutChan {
-			fmt.Println("CHUNK: ", chunk)
+			//fmt.Println("CHUNK: ", chunk)
 			mutex.Lock()
 			err := receiverConn.WriteMessage(websocket.BinaryMessage, chunk)
 			mutex.Unlock()
