@@ -173,6 +173,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 					break
 				}*/
 			if found || isWebM(msg) {
+				fmt.Println("SENDING")
 				handleIncoming(msg)
 				found = true
 			}
@@ -304,7 +305,7 @@ func handleIncoming(data []byte) {
 		fixedData = append(fixedData, data...)
 		data = fixedData
 	}
-	fmt.Println(data)
+	//fmt.Println(data)
 	mutex.Lock()
 	stdin.Write(data)
 	mutex.Unlock()
