@@ -171,7 +171,10 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					fmt.Println("Error writing to ffmpeg stdin:", err)
 					break
-				}*/
+			}*/
+
+			fmt.Println("ISWEB: ", isWebM(msg))
+			fmt.Println("FOUNd: ", found)
 			if found || isWebM(msg) {
 				fmt.Println("SENDING")
 				handleIncoming(msg)
