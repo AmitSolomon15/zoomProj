@@ -126,6 +126,8 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	username, conn := connectWS(w, r)
 	fmt.Printf("User %s connected\n", username)
 
+	forwordToReciver(username)
+
 	// Listen for messages
 	for {
 		fmt.Println("ENTERED THe LOOP")
@@ -151,7 +153,6 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			continue
 		} else {
 			fmt.Println(isMp4(msg))
-			forwordToReciver(username)
 			// Handle media forwarding
 			fmt.Println("GOING FPRWORD")
 			mutex.Lock()
@@ -259,14 +260,13 @@ func findReciever(sender string) (string, error) {
 
 func forwordToReciver(sender string) {
 	fmt.Println("forwordToReciver")
-
+	receiver, err := findReciever(sender)
+	if err != nil {
+		fmt.Println("ERROR ", err)
+		return
+	}
+	receiverConn := clients[receiver].Conn
 	go func() {
-		receiver, err := findReciever(sender)
-		if err != nil {
-			fmt.Println("ERROR ", err)
-			return
-		}
-		receiverConn := clients[receiver].Conn
 		for chunk := range ffmpegOutChan {
 			fmt.Println("CHUNK: ", chunk)
 			mutex.Lock()
