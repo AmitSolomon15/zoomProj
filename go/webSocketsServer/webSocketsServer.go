@@ -37,6 +37,9 @@ var (
 	stdout io.ReadCloser
 	//cmd    *exec.Cmd = cmdInit()
 	ffmpegOutChan = make(chan []byte, 1024)
+	clusterBuf    bytes.Buffer
+	insideCluster bool
+	clusterSize   int
 )
 
 // Upgrader is used to upgrade HTTP connections to WebSocket connections.
@@ -152,19 +155,21 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			mutex.Unlock()
 			continue
 		} else {
-			//fmt.Println(isMp4(msg))
-			// Handle media forwarding
-			fmt.Println("GOING FPRWORD")
-			mutex.Lock()
-			fmt.Println("THE DATA SENT TO FFMPEG: ", msg)
-			numOfBytes, err := stdin.Write(msg)
-			fmt.Println("size of msg: ", numOfBytes)
-			mutex.Unlock()
-			//fmt.Println("READ")
-			if err != nil {
-				fmt.Println("Error writing to ffmpeg stdin:", err)
-				break
-			}
+			/*
+				//fmt.Println(isMp4(msg))
+				// Handle media forwarding
+				fmt.Println("GOING FPRWORD")
+				mutex.Lock()
+				fmt.Println("THE DATA SENT TO FFMPEG: ", msg)
+				numOfBytes, err := stdin.Write(msg)
+				fmt.Println("size of msg: ", numOfBytes)
+				mutex.Unlock()
+				//fmt.Println("READ")
+				if err != nil {
+					fmt.Println("Error writing to ffmpeg stdin:", err)
+					break
+				}*/
+			handleIncoming(msg)
 		}
 
 	}
@@ -278,4 +283,60 @@ func forwordToReciver(sender string) {
 			}
 		}
 	}()
+}
+
+func handleIncoming(data []byte) {
+	for len(data) > 0 {
+		if !insideCluster {
+			// Look for Cluster ID (1F 43 B6 75)
+			idx := bytes.Index(data, []byte{0x1F, 0x43, 0xB6, 0x75})
+			if idx == -1 {
+				return // no cluster start in this chunk
+			}
+			insideCluster = true
+			clusterBuf.Reset()
+			clusterBuf.Write(data[idx:]) // start buffering
+			data = data[idx+4:]          // move past ID
+
+			var err error
+			clusterSize, err = parseVint(data)
+			if err != nil {
+				fmt.Println("SOMETHING WENT WRONG")
+				return
+			}
+		} else {
+			// Continue buffering
+			clusterBuf.Write(data)
+			if clusterBuf.Len() >= clusterSize {
+				// We have a full cluster → send to ffmpeg
+				stdin.Write(clusterBuf.Bytes())
+				insideCluster = false
+				clusterBuf.Reset()
+			}
+			break
+		}
+	}
+}
+
+func parseVint(data []byte) (int, error) {
+	if len(data) == 0 {
+		return 0, fmt.Errorf("empty data")
+	}
+
+	first := data[0]
+
+	// Find length by checking first 1-bit
+	var length int
+	mask := byte(0x80) // 1000 0000
+	for length = 1; length <= 8; length++ {
+		if first&mask != 0 {
+			break
+		}
+		mask >>= 1
+	}
+	if length > len(data) {
+		return 0, fmt.Errorf("not enough bytes for VINT")
+	}
+
+	return length, nil
 }
