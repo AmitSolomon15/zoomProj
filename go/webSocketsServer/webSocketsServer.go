@@ -74,8 +74,8 @@ func cmdInit() {
 	excmd := exec.Command("ffmpeg",
 		"-fflags", "nobuffer+discardcorrupt",
 		"-flags", "low_delay",
-		"-probesize", "60",
-		"-analyzeduration", "0",
+		"-probesize", "50M",
+		"-analyzeduration", "100M",
 		"-f", "webm", // input format
 		"-i", "pipe:0", // read from stdin
 		"-ac", "2",
