@@ -133,6 +133,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Listen for messages
 	for {
+		found := false
 		fmt.Println("ENTERED THe LOOP")
 
 		mutex.Lock()
@@ -169,7 +170,11 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 					fmt.Println("Error writing to ffmpeg stdin:", err)
 					break
 				}*/
-			handleIncoming(msg)
+			if found || isWebM(msg) {
+				handleIncoming(msg)
+				found = true
+			}
+
 		}
 
 	}
