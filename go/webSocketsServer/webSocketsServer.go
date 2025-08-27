@@ -36,10 +36,12 @@ var (
 	stdin  io.WriteCloser
 	stdout io.ReadCloser
 	//cmd    *exec.Cmd = cmdInit()
-	ffmpegOutChan = make(chan []byte, 1024)
-	clusterBuf    bytes.Buffer
-	insideCluster bool
-	clusterSize   int
+	ffmpegOutChan  = make(chan []byte, 1024)
+	clusterBuf     bytes.Buffer
+	insideCluster  bool
+	clusterSize    int
+	ebmlHeader     []byte
+	headerCaptured bool
 )
 
 // Upgrader is used to upgrade HTTP connections to WebSocket connections.
@@ -291,37 +293,54 @@ func forwordToReciver(sender string) {
 }
 
 func handleIncoming(data []byte) {
-	for len(data) > 0 {
-		if !insideCluster {
-			// Look for Cluster ID (1F 43 B6 75)
-			idx := bytes.Index(data, []byte{0x1F, 0x43, 0xB6, 0x75})
-			if idx == -1 {
-				return // no cluster start in this chunk
-			}
-			insideCluster = true
-			clusterBuf.Reset()
-			clusterBuf.Write(data[idx:]) // start buffering
-			data = data[idx+4:]          // move past ID
-
-			var err error
-			clusterSize, err = parseVint(data)
-			if err != nil {
-				fmt.Println("SOMETHING WENT WRONG")
-				return
-			}
-		} else {
-			// Continue buffering
-			clusterBuf.Write(data)
-			if clusterBuf.Len() >= clusterSize {
-				// We have a full cluster → send to ffmpeg
-				fmt.Println("cluster data: ", clusterBuf.Bytes())
-				stdin.Write(clusterBuf.Bytes())
-				insideCluster = false
-				clusterBuf.Reset()
-			}
-			break
+	if !headerCaptured {
+		idx := bytes.Index(data, []byte{0x1F, 0x43, 0xB6, 0x75})
+		if idx > 0 {
+			ebmlHeader = append([]byte{}, data[:idx]...)
+			headerCaptured = true
 		}
+	} else {
+		fixedData := ebmlHeader
+		fixedData = append(fixedData, data...)
+		data = fixedData
 	}
+	fmt.Println(data)
+	mutex.Lock()
+	stdin.Write(data)
+	mutex.Unlock()
+	/*
+		for len(data) > 0 {
+			if !insideCluster {
+				// Look for Cluster ID (1F 43 B6 75)
+				idx := bytes.Index(data, []byte{0x1F, 0x43, 0xB6, 0x75})
+				if idx == -1 {
+					return // no cluster start in this chunk
+				}
+				insideCluster = true
+				clusterBuf.Reset()
+				clusterBuf.Write(data[idx:]) // start buffering
+				data = data[idx+4:]          // move past ID
+
+				var err error
+				clusterSize, err = parseVint(data)
+				if err != nil {
+					fmt.Println("SOMETHING WENT WRONG")
+					return
+				}
+			} else {
+				// Continue buffering
+				clusterBuf.Write(data)
+				if clusterBuf.Len() >= clusterSize {
+					// We have a full cluster → send to ffmpeg
+					fmt.Println("cluster data: ", clusterBuf.Bytes())
+					stdin.Write(clusterBuf.Bytes())
+					insideCluster = false
+					clusterBuf.Reset()
+				}
+				break
+			}
+		}
+	*/
 }
 
 func parseVint(data []byte) (int, error) {
