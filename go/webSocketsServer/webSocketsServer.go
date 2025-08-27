@@ -105,7 +105,7 @@ func cmdInit() {
 		for {
 			fmt.Println("ENTERED FIRST FUNC LOOOP")
 			n, err := stdout.Read(buf)
-			fmt.Println("buffer")
+			fmt.Println("buffer ", buf[:n])
 			if err != nil {
 				fmt.Println("ffmpeg stdout error:", err)
 
@@ -114,7 +114,7 @@ func cmdInit() {
 			// copy to avoid re-use of buf
 			data := make([]byte, n)
 			copy(data, buf[:n])
-			fmt.Println("buffer ", string(data))
+			fmt.Println("buffer2 ", string(data))
 			ffmpegOutChan <- data
 
 		}
