@@ -36,10 +36,12 @@ var (
 	stdin  io.WriteCloser
 	stdout io.ReadCloser
 	//cmd    *exec.Cmd = cmdInit()
-	ffmpegOutChan  = make(chan []byte, 1024)
-	clusterBuf     bytes.Buffer
-	insideCluster  bool
-	clusterSize    int
+	ffmpegOutChan = make(chan []byte, 1024)
+	/*
+		clusterBuf     bytes.Buffer
+		insideCluster  bool
+		clusterSize    int
+	*/
 	ebmlHeader     []byte
 	headerCaptured bool
 )
@@ -107,6 +109,7 @@ func cmdInit() {
 	go func() {
 		fmt.Println("ENTERED FIRST FUNC")
 		buf := make([]byte, 1024)
+		fmt.Println("READ FROM STDOUT")
 		for {
 			fmt.Println("ENTERED FIRST FUNC LOOOP")
 			n, err := stdout.Read(buf)
@@ -151,6 +154,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if isMp4(msg) {
+			found = false
 			fmt.Println("MP4")
 			mutex.Lock()
 			fmt.Println("mp4 ", string(msg))
@@ -308,10 +312,11 @@ func handleIncoming(data []byte) {
 		fixedData = append(fixedData, data...)
 		data = fixedData
 	}
-	fmt.Println(data)
+	//fmt.Println(data)
 	mutex.Lock()
 	stdin.Write(data)
 	mutex.Unlock()
+	fmt.Println("WRITTEN TO STDIN")
 	/*
 		for len(data) > 0 {
 			if !insideCluster {
@@ -347,6 +352,7 @@ func handleIncoming(data []byte) {
 	*/
 }
 
+/*
 func parseVint(data []byte) (int, error) {
 	if len(data) == 0 {
 		return 0, fmt.Errorf("empty data")
@@ -369,3 +375,4 @@ func parseVint(data []byte) (int, error) {
 
 	return length, nil
 }
+*/
