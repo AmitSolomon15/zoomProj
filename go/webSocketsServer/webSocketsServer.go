@@ -156,6 +156,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			// Handle media forwarding
 			fmt.Println("GOING FPRWORD")
 			mutex.Lock()
+			fmt.Println("THE DATA SENT TO FFMPEG: ", msg)
 			numOfBytes, err := stdin.Write(msg)
 			fmt.Println("size of msg: ", numOfBytes)
 			mutex.Unlock()
@@ -266,7 +267,6 @@ func forwordToReciver(sender string) {
 	}
 	receiverConn := clients[receiver].Conn
 	go func() {
-
 		for chunk := range ffmpegOutChan {
 			fmt.Println("CHUNK: ", chunk)
 			mutex.Lock()
