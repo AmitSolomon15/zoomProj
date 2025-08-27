@@ -147,11 +147,11 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		if isMp4(msg) {
 			fmt.Println("MP4")
 			mutex.Lock()
-			//fmt.Println(string(msg))
+			fmt.Println(string(msg))
 			conn.WriteMessage(websocket.BinaryMessage, msg)
 			mutex.Unlock()
 			continue
-		} else if isWebM(msg) {
+		} else {
 			//fmt.Println(isMp4(msg))
 			// Handle media forwarding
 			fmt.Println("GOING FPRWORD")
