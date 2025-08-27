@@ -144,8 +144,15 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 
-		if isWebM(msg) {
-
+		if isMp4(msg) {
+			fmt.Println("MP4")
+			mutex.Lock()
+			//fmt.Println(string(msg))
+			conn.WriteMessage(websocket.BinaryMessage, msg)
+			mutex.Unlock()
+			continue
+		} else {
+			fmt.Println(isMp4(msg))
 			// Handle media forwarding
 			fmt.Println("GOING FPRWORD")
 			mutex.Lock()
@@ -158,13 +165,6 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 				fmt.Println("Error writing to ffmpeg stdin:", err)
 				break
 			}
-		} else {
-			fmt.Println("MP4 ", isMp4(msg))
-			mutex.Lock()
-			//fmt.Println(string(msg))
-			conn.WriteMessage(websocket.BinaryMessage, msg)
-			mutex.Unlock()
-			continue
 		}
 
 	}
