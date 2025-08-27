@@ -105,7 +105,7 @@ func cmdInit() {
 		for {
 			fmt.Println("ENTERED FIRST FUNC LOOOP")
 			n, err := stdout.Read(buf)
-			fmt.Println("buffer ", buf[:n])
+			fmt.Println("buffer ", string(buf))
 			if err != nil {
 				fmt.Println("ffmpeg stdout error:", err)
 
@@ -114,7 +114,7 @@ func cmdInit() {
 			// copy to avoid re-use of buf
 			data := make([]byte, n)
 			copy(data, buf[:n])
-			fmt.Println("buffer2 ", string(data))
+			fmt.Println("buffer ", string(data))
 			ffmpegOutChan <- data
 
 		}
@@ -152,11 +152,11 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			mutex.Unlock()
 			continue
 		} else {
-			fmt.Println(isWebM(msg))
+			fmt.Println(isMp4(msg))
 			// Handle media forwarding
 			fmt.Println("GOING FPRWORD")
 			mutex.Lock()
-			//fmt.Println("THE DATA SENT TO FFMPEG: ", msg)
+			fmt.Println("THE DATA SENT TO FFMPEG: ", msg)
 			numOfBytes, err := stdin.Write(msg)
 			fmt.Println("size of msg: ", numOfBytes)
 			mutex.Unlock()
@@ -268,7 +268,7 @@ func forwordToReciver(sender string) {
 	receiverConn := clients[receiver].Conn
 	go func() {
 		for chunk := range ffmpegOutChan {
-			//fmt.Println("CHUNK: ", chunk)
+			fmt.Println("CHUNK: ", chunk)
 			mutex.Lock()
 			err := receiverConn.WriteMessage(websocket.BinaryMessage, chunk)
 			mutex.Unlock()
