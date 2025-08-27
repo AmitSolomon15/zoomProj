@@ -126,8 +126,6 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	username, conn := connectWS(w, r)
 	fmt.Printf("User %s connected\n", username)
 
-	forwordToReciver(username)
-
 	// Listen for messages
 	for {
 		fmt.Println("ENTERED THe LOOP")
@@ -153,6 +151,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			continue
 		} else {
 			fmt.Println(isMp4(msg))
+			forwordToReciver(username)
 			// Handle media forwarding
 			fmt.Println("GOING FPRWORD")
 			mutex.Lock()
