@@ -259,13 +259,14 @@ func findReciever(sender string) (string, error) {
 
 func forwordToReciver(sender string) {
 	fmt.Println("forwordToReciver")
-	receiver, err := findReciever(sender)
-	if err != nil {
-		fmt.Println("ERROR ", err)
-		return
-	}
-	receiverConn := clients[receiver].Conn
+
 	go func() {
+		receiver, err := findReciever(sender)
+		if err != nil {
+			fmt.Println("ERROR ", err)
+			return
+		}
+		receiverConn := clients[receiver].Conn
 		for chunk := range ffmpegOutChan {
 			fmt.Println("CHUNK: ", chunk)
 			mutex.Lock()
