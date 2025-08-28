@@ -113,7 +113,9 @@ func cmdInit() {
 		fmt.Println("READ FROM STDOUT")
 		for {
 			fmt.Println("ENTERED FIRST FUNC LOOOP")
+			mutex.Lock()
 			n, err := stdout.Read(buf)
+			mutex.Unlock()
 			fmt.Println("buffer ", string(buf))
 			if err != nil {
 				fmt.Println("ffmpeg stdout error:", err)
