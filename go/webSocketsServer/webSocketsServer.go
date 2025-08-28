@@ -110,31 +110,33 @@ func cmdInit() {
 	excmd.Start()
 
 	go func() {
-		reader := bufio.NewReader(stdout)
+
 		fmt.Println("ENTERED FIRST FUNC")
 		buf := make([]byte, 1024*64)
 		fmt.Println("READ FROM STDOUT")
 
 		for {
-			fmt.Println("ENTERED FIRST FUNC LOOOP")
-			fmt.Println("READABLE BITS ", reader.Buffered())
+			reader := bufio.NewReader(stdout)
 
-			//fmt.Println(stdout.Read(buf))
-			//fmt.Println("STDOUT")
-			n, err := reader.Read(buf)
+			if stdout != nil && reader.Buffered() > 0 {
+				fmt.Println("ENTERED FIRST FUNC LOOOP")
+				fmt.Println("READABLE BITS ", reader.Buffered())
+				//fmt.Println(stdout.Read(buf))
+				//fmt.Println("STDOUT")
+				n, err := reader.Read(buf)
 
-			fmt.Println("buffer ", string(buf))
-			if err != nil {
-				fmt.Println("ffmpeg stdout error:", err)
+				fmt.Println("buffer ", string(buf))
+				if err != nil {
+					fmt.Println("ffmpeg stdout error:", err)
 
-				return
+					return
+				}
+				// copy to avoid re-use of buf
+				data := make([]byte, n)
+				copy(data, buf[:n])
+				//fmt.Println("buffer2 ", string(data))
+				ffmpegOutChan <- data
 			}
-			// copy to avoid re-use of buf
-			data := make([]byte, n)
-			copy(data, buf[:n])
-			//fmt.Println("buffer2 ", string(data))
-			ffmpegOutChan <- data
-
 		}
 	}()
 }
