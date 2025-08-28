@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"errors"
@@ -109,6 +110,7 @@ func cmdInit() {
 	excmd.Start()
 
 	go func() {
+		reader := bufio.NewReader(stdout)
 		fmt.Println("ENTERED FIRST FUNC")
 		buf := make([]byte, 1024*64)
 		fmt.Println("READ FROM STDOUT")
@@ -118,7 +120,7 @@ func cmdInit() {
 			if stdout != nil {
 				//fmt.Println(stdout.Read(buf))
 				//fmt.Println("STDOUT")
-				n, err := stdout.Read(buf)
+				n, err := reader.Read(buf)
 
 				fmt.Println("buffer ", string(buf))
 				if err != nil {
