@@ -146,17 +146,16 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	username, conn := connectWS(w, r)
 	fmt.Printf("User %s connected\n", username)
 
-	_, err := findReciever(username)
-	if err != nil {
-		fmt.Println("ERROR ", err)
-		return
-	}
-
 	forwordToReciver(username)
 
 	// Listen for messages
 	found := false
 	for {
+		_, err := findReciever(username)
+		if err != nil {
+			fmt.Println("ERROR ", err)
+			continue
+		}
 		fmt.Println("ENTERED THe LOOP")
 
 		mutex.Lock()
