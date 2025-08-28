@@ -115,6 +115,7 @@ func cmdInit() {
 			fmt.Println("ENTERED FIRST FUNC LOOOP")
 
 			fmt.Println(stdout.Read(buf))
+			fmt.Println("STDOUT")
 			n, err := stdout.Read(buf)
 
 			fmt.Println("buffer ", string(buf))
