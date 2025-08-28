@@ -114,6 +114,7 @@ func cmdInit() {
 		fmt.Println("ENTERED FIRST FUNC")
 		buf := make([]byte, 1024*64)
 		fmt.Println("READ FROM STDOUT")
+		fmt.Println("READABLE BITS ", reader.Buffered())
 		for {
 			fmt.Println("ENTERED FIRST FUNC LOOOP")
 
