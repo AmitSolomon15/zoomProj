@@ -114,10 +114,8 @@ func cmdInit() {
 		fmt.Println("ENTERED FIRST FUNC")
 		buf := make([]byte, 1024*64)
 		fmt.Println("READ FROM STDOUT")
-		i := 0
 		for {
 			time.Sleep(1000)
-			fmt.Println("ENTERED LOOP ", i)
 			reader := bufio.NewReader(stdout)
 
 			if stdout != nil && reader.Buffered() > 0 {
@@ -139,7 +137,7 @@ func cmdInit() {
 				//fmt.Println("buffer2 ", string(data))
 				ffmpegOutChan <- data
 			}
-			i++
+
 		}
 	}()
 }
