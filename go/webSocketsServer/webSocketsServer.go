@@ -186,6 +186,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			}*/
 
 			fmt.Println("ISWEB: ", isWebM(msg))
+			fmt.Println(msg)
 			fmt.Println("FOUNd: ", found)
 			if found || isWebM(msg) {
 				fmt.Println("SENDING")
