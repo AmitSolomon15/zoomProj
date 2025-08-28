@@ -114,6 +114,7 @@ func cmdInit() {
 		for {
 			fmt.Println("ENTERED FIRST FUNC LOOOP")
 
+			fmt.Println(stdout.Read(buf))
 			n, err := stdout.Read(buf)
 
 			fmt.Println("buffer ", string(buf))
