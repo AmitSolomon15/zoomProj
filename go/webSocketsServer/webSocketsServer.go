@@ -147,7 +147,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	username, conn := connectWS(w, r)
 	fmt.Printf("User %s connected\n", username)
 
-	forwordToReciver(username)
+	go forwordToReciver(username)
 
 	// Listen for messages
 	found := false
