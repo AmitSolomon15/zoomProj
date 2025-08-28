@@ -330,7 +330,8 @@ func handleIncoming(data []byte) {
 		fixedData = ebmlHeader
 		fixedData = append(fixedData, data...)
 		//data = fixedData
-		fmt.Println("IS EQUAL ", bytes.Compare(data, fixedData))
+		//fmt.Println("IS EQUAL ", bytes.Compare(data, fixedData))
+		fmt.Println("FIXED DATA: ", fixedData)
 	}
 	//fmt.Println(data)
 	mutex.Lock()
