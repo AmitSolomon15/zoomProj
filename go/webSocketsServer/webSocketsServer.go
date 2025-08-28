@@ -95,6 +95,7 @@ func cmdInit() {
 		"-level", "3.1",
 		"-x264-params", "keyint=10:scenecut=0", // shorter GOP -> more keyframes
 		"-flush_packets", "1",
+		"-avioflags", "direct",
 		"-g", "10", // force keyframe interval
 		"-vsync", "0",
 		"-f", "mp4",
