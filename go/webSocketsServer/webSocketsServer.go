@@ -318,22 +318,23 @@ func forwordToReciver(sender string) {
 }
 
 func handleIncoming(data []byte) {
+	var fixedData []byte
 	if !headerCaptured {
 		idx := bytes.Index(data, []byte{0x1F, 0x43, 0xB6, 0x75})
 		if idx > 0 {
 			ebmlHeader = append([]byte{}, data[:idx]...)
 			headerCaptured = true
+			fixedData = data
 		}
 	} else {
-		fmt.Println(ebmlHeader)
-		fixedData := ebmlHeader
+		fixedData = ebmlHeader
 		fixedData = append(fixedData, data...)
-		data = fixedData
+		//data = fixedData
 		fmt.Println("IS EQUAL ", bytes.Compare(data, fixedData))
 	}
 	//fmt.Println(data)
 	mutex.Lock()
-	stdin.Write(data)
+	stdin.Write(fixedData)
 	mutex.Unlock()
 	fmt.Println("WRITTEN TO STDIN")
 
