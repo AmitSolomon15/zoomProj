@@ -156,6 +156,9 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		user2, err := findReciever(username)
 		if err != nil {
 			fmt.Println("ERROR ", err)
+			fmt.Println("BOOLS ", len(clientsConnectionExist))
+			fmt.Println("CLIENTS ", len(clients))
+			fmt.Println("found ", found)
 			if len(clientsConnectionExist) < len(clients) {
 				fmt.Println("RETURN")
 				return
