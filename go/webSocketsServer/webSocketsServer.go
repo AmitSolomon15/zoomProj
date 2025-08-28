@@ -304,19 +304,16 @@ func forwordToReciver(sender string) {
 
 	receiverConn := clients[receiver].Conn
 	go func() {
-		if len(ffmpegOutChan) > 0 {
-			for chunk := range ffmpegOutChan {
-				fmt.Println("CHUNK: ", chunk)
-				mutex.Lock()
-				err := receiverConn.WriteMessage(websocket.BinaryMessage, chunk)
-				mutex.Unlock()
-				if err != nil {
-					fmt.Println("write error to receiver:", err)
-					return
-				}
+		for chunk := range ffmpegOutChan {
+			fmt.Println("CHUNK: ", chunk)
+			mutex.Lock()
+			err := receiverConn.WriteMessage(websocket.BinaryMessage, chunk)
+			mutex.Unlock()
+			if err != nil {
+				fmt.Println("write error to receiver:", err)
+				return
 			}
 		}
-
 	}()
 }
 
