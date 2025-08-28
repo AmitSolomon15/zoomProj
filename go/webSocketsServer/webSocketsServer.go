@@ -151,52 +151,54 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Listen for messages
 	found := false
-	for {
-		user2, err := findReciever(username)
-		if err != nil {
-			fmt.Println("ERROR ", err)
-			if len(clientsConnectionExist) < len(clients) {
-				return
+	go func() {
+		for {
+			user2, err := findReciever(username)
+			if err != nil {
+				fmt.Println("ERROR ", err)
+				if len(clientsConnectionExist) < len(clients) {
+					return
+				}
+				continue
+			} else {
+				clientsConnectionExist[user2] = true
 			}
-			continue
-		} else {
-			clientsConnectionExist[user2] = true
-		}
 
-		fmt.Println("ENTERED THe LOOP")
+			fmt.Println("ENTERED THe LOOP")
 
-		mutex.Lock()
-		_, msg, err := conn.ReadMessage()
-		mutex.Unlock()
-
-		//fmt.Println("msgType is: ", msgType)
-
-		if err != nil {
-			fmt.Println("Read error:", err)
-			fmt.Println("BREAKING")
-			break
-		}
-
-		if isMp4(msg) {
-			found = false
-			fmt.Println("MP4")
 			mutex.Lock()
-			fmt.Println("mp4 ", string(msg))
-			conn.WriteMessage(websocket.BinaryMessage, msg)
+			_, msg, err := conn.ReadMessage()
 			mutex.Unlock()
-			continue
-		} else {
-			fmt.Println("ISWEB: ", isWebM(msg))
-			fmt.Println("FOUNd: ", found)
-			if found || isWebM(msg) {
-				fmt.Println("SENDING")
-				handleIncoming(msg)
-				found = true
+
+			//fmt.Println("msgType is: ", msgType)
+
+			if err != nil {
+				fmt.Println("Read error:", err)
+				fmt.Println("BREAKING")
+				break
+			}
+
+			if isMp4(msg) {
+				found = false
+				fmt.Println("MP4")
+				mutex.Lock()
+				fmt.Println("mp4 ", string(msg))
+				conn.WriteMessage(websocket.BinaryMessage, msg)
+				mutex.Unlock()
+				continue
+			} else {
+				fmt.Println("ISWEB: ", isWebM(msg))
+				fmt.Println("FOUNd: ", found)
+				if found || isWebM(msg) {
+					fmt.Println("SENDING")
+					handleIncoming(msg)
+					found = true
+				}
+
 			}
 
 		}
-
-	}
+	}()
 
 	// Clean up on disconnect
 	fmt.Println("DELETING")
