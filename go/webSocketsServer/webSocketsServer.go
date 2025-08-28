@@ -109,7 +109,7 @@ func cmdInit() {
 
 	go func() {
 		fmt.Println("ENTERED FIRST FUNC")
-		buf := make([]byte, 1024)
+		buf := make([]byte, 1024*64)
 		fmt.Println("READ FROM STDOUT")
 		for {
 			fmt.Println("ENTERED FIRST FUNC LOOOP")
