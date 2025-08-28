@@ -108,15 +108,13 @@ func cmdInit() {
 	//fmt.Println("OUT: ", stdout)
 	excmd.Stderr = os.Stderr
 	excmd.Start()
-
+	reader := bufio.NewReader(stdout)
 	go func() {
 
 		fmt.Println("ENTERED FIRST FUNC")
 		buf := make([]byte, 1024*64)
 		fmt.Println("READ FROM STDOUT")
 		for {
-			time.Sleep(1000)
-			reader := bufio.NewReader(stdout)
 
 			if stdout != nil && reader.Buffered() > 0 {
 				fmt.Println("ENTERED FIRST FUNC LOOOP")
