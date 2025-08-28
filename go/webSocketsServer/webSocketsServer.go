@@ -118,7 +118,7 @@ func cmdInit() {
 		for {
 			fmt.Println("ENTERED FIRST FUNC LOOOP")
 			fmt.Println("READABLE BITS ", reader.Buffered())
-			if stdout != nil && reader.Buffered() > 0 {
+			if stdout != nil {
 				//fmt.Println(stdout.Read(buf))
 				//fmt.Println("STDOUT")
 				n, err := reader.Read(buf)
