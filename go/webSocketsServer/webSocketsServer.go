@@ -325,6 +325,7 @@ func handleIncoming(data []byte) {
 			headerCaptured = true
 		}
 	} else {
+		fmt.Println(ebmlHeader)
 		fixedData := ebmlHeader
 		fixedData = append(fixedData, data...)
 		data = fixedData
