@@ -104,6 +104,7 @@ func cmdInit() {
 	)
 	stdin, _ = excmd.StdinPipe()
 	stdout, _ = excmd.StdoutPipe()
+	fmt.Println("OUT: ", stdout)
 	excmd.Stderr = os.Stderr
 	excmd.Start()
 
@@ -114,22 +115,23 @@ func cmdInit() {
 		for {
 			fmt.Println("ENTERED FIRST FUNC LOOOP")
 
-			fmt.Println(stdout.Read(buf))
-			fmt.Println("STDOUT")
-			n, err := stdout.Read(buf)
+			if stdout != nil {
+				//fmt.Println(stdout.Read(buf))
+				//fmt.Println("STDOUT")
+				n, err := stdout.Read(buf)
 
-			fmt.Println("buffer ", string(buf))
-			if err != nil {
-				fmt.Println("ffmpeg stdout error:", err)
+				fmt.Println("buffer ", string(buf))
+				if err != nil {
+					fmt.Println("ffmpeg stdout error:", err)
 
-				return
+					return
+				}
+				// copy to avoid re-use of buf
+				data := make([]byte, n)
+				copy(data, buf[:n])
+				//fmt.Println("buffer2 ", string(data))
+				ffmpegOutChan <- data
 			}
-			// copy to avoid re-use of buf
-			data := make([]byte, n)
-			copy(data, buf[:n])
-			//fmt.Println("buffer2 ", string(data))
-			ffmpegOutChan <- data
-
 		}
 	}()
 }
