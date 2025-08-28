@@ -118,23 +118,23 @@ func cmdInit() {
 		for {
 			fmt.Println("ENTERED FIRST FUNC LOOOP")
 			fmt.Println("READABLE BITS ", reader.Buffered())
-			if stdout != nil {
-				//fmt.Println(stdout.Read(buf))
-				//fmt.Println("STDOUT")
-				n, err := reader.Read(buf)
 
-				fmt.Println("buffer ", string(buf))
-				if err != nil {
-					fmt.Println("ffmpeg stdout error:", err)
+			//fmt.Println(stdout.Read(buf))
+			//fmt.Println("STDOUT")
+			n, err := reader.Read(buf)
 
-					return
-				}
-				// copy to avoid re-use of buf
-				data := make([]byte, n)
-				copy(data, buf[:n])
-				//fmt.Println("buffer2 ", string(data))
-				ffmpegOutChan <- data
+			fmt.Println("buffer ", string(buf))
+			if err != nil {
+				fmt.Println("ffmpeg stdout error:", err)
+
+				return
 			}
+			// copy to avoid re-use of buf
+			data := make([]byte, n)
+			copy(data, buf[:n])
+			//fmt.Println("buffer2 ", string(data))
+			ffmpegOutChan <- data
+
 		}
 	}()
 }
