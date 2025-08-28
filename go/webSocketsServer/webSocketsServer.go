@@ -80,6 +80,7 @@ func connectMongo() {
 }
 func cmdInit() {
 	excmd := exec.Command("ffmpeg",
+		"-loglevel", "debug",
 		"-fflags", "nobuffer+discardcorrupt",
 		"-flags", "low_delay",
 		"-probesize", "50M",
@@ -116,25 +117,25 @@ func cmdInit() {
 		fmt.Println("READ FROM STDOUT")
 		for {
 			//fmt.Println("READABLE BITS ", reader.Buffered())
-			if stdout != nil && reader.Buffered() > 0 {
-				fmt.Println("ENTERED FIRST FUNC LOOOP")
-				fmt.Println("READABLE BITS ", reader.Buffered())
-				//fmt.Println(stdout.Read(buf))
-				//fmt.Println("STDOUT")
-				n, err := reader.Read(buf)
+			//if stdout != nil && reader.Buffered() > 0 {
+			//fmt.Println("ENTERED FIRST FUNC LOOOP")
+			//fmt.Println("READABLE BITS ", reader.Buffered())
+			//fmt.Println(stdout.Read(buf))
+			//fmt.Println("STDOUT")
+			n, err := reader.Read(buf)
 
-				fmt.Println("buffer ", string(buf))
-				if err != nil {
-					fmt.Println("ffmpeg stdout error:", err)
+			fmt.Println("buffer ", string(buf))
+			if err != nil {
+				fmt.Println("ffmpeg stdout error:", err)
 
-					return
-				}
-				// copy to avoid re-use of buf
-				data := make([]byte, n)
-				copy(data, buf[:n])
-				//fmt.Println("buffer2 ", string(data))
-				ffmpegOutChan <- data
+				return
 			}
+			// copy to avoid re-use of buf
+			data := make([]byte, n)
+			copy(data, buf[:n])
+			//fmt.Println("buffer2 ", string(data))
+			ffmpegOutChan <- data
+			//}
 
 		}
 	}()
@@ -179,21 +180,6 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			mutex.Unlock()
 			continue
 		} else {
-			/*
-				//fmt.Println(isMp4(msg))
-				// Handle media forwarding
-				fmt.Println("GOING FPRWORD")
-				mutex.Lock()
-				fmt.Println("THE DATA SENT TO FFMPEG: ", msg)
-				numOfBytes, err := stdin.Write(msg)
-				fmt.Println("size of msg: ", numOfBytes)
-				mutex.Unlock()
-				//fmt.Println("READ")
-				if err != nil {
-					fmt.Println("Error writing to ffmpeg stdin:", err)
-					break
-			}*/
-
 			fmt.Println("ISWEB: ", isWebM(msg))
 			fmt.Println("FOUNd: ", found)
 			if found || isWebM(msg) {
@@ -338,62 +324,5 @@ func handleIncoming(data []byte) {
 	stdin.Write(data)
 	mutex.Unlock()
 	fmt.Println("WRITTEN TO STDIN")
-	/*
-		for len(data) > 0 {
-			if !insideCluster {
-				// Look for Cluster ID (1F 43 B6 75)
-				idx := bytes.Index(data, []byte{0x1F, 0x43, 0xB6, 0x75})
-				if idx == -1 {
-					return // no cluster start in this chunk
-				}
-				insideCluster = true
-				clusterBuf.Reset()
-				clusterBuf.Write(data[idx:]) // start buffering
-				data = data[idx+4:]          // move past ID
 
-				var err error
-				clusterSize, err = parseVint(data)
-				if err != nil {
-					fmt.Println("SOMETHING WENT WRONG")
-					return
-				}
-			} else {
-				// Continue buffering
-				clusterBuf.Write(data)
-				if clusterBuf.Len() >= clusterSize {
-					// We have a full cluster → send to ffmpeg
-					fmt.Println("cluster data: ", clusterBuf.Bytes())
-					stdin.Write(clusterBuf.Bytes())
-					insideCluster = false
-					clusterBuf.Reset()
-				}
-				break
-			}
-		}
-	*/
 }
-
-/*
-func parseVint(data []byte) (int, error) {
-	if len(data) == 0 {
-		return 0, fmt.Errorf("empty data")
-	}
-
-	first := data[0]
-
-	// Find length by checking first 1-bit
-	var length int
-	mask := byte(0x80) // 1000 0000
-	for length = 1; length <= 8; length++ {
-		if first&mask != 0 {
-			break
-		}
-		mask >>= 1
-	}
-	if length > len(data) {
-		return 0, fmt.Errorf("not enough bytes for VINT")
-	}
-
-	return length, nil
-}
-*/
