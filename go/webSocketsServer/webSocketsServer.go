@@ -43,8 +43,9 @@ var (
 		insideCluster  bool
 		clusterSize    int
 	*/
-	ebmlHeader     []byte
-	headerCaptured bool
+	ebmlHeader             []byte
+	headerCaptured         bool
+	clientsConnectionExist = make(map[string]bool)
 )
 
 // Upgrader is used to upgrade HTTP connections to WebSocket connections.
@@ -101,7 +102,7 @@ func cmdInit() {
 		"-g", "10", // force keyframe interval
 		"-vsync", "0",
 		"-f", "mp4",
-		"-movflags", "+frag_keyframe+empty_moov+default_base_moof+delay_moov",
+		"-movflags", "+frag_keyframe+empty_moov+default_base_moof",
 		"pipe:1",
 	)
 	stdin, _ = excmd.StdinPipe()
@@ -151,11 +152,17 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	// Listen for messages
 	found := false
 	for {
-		_, err := findReciever(username)
+		user2, err := findReciever(username)
 		if err != nil {
 			fmt.Println("ERROR ", err)
+			if len(clientsConnectionExist) < len(clients) {
+				return
+			}
 			continue
+		} else {
+			clientsConnectionExist[user2] = true
 		}
+
 		fmt.Println("ENTERED THe LOOP")
 
 		mutex.Lock()
@@ -275,8 +282,10 @@ func findReciever(sender string) (string, error) {
 	fmt.Println("user ", receiver, " connection: ", clients[receiver])
 	if clients[receiver] == nil {
 		fmt.Println("Receiver not connected:", receiver)
+		delete(clientsConnectionExist, receiver)
 		return "", errors.New("2nd user not found")
 	}
+
 	return receiver, nil
 }
 
