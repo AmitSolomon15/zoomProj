@@ -46,7 +46,7 @@ var (
 	ebmlHeader             []byte
 	headerCaptured         bool
 	clientsConnectionExist = make(map[string]bool)
-	countMP4               int
+	//countMP4               int
 )
 
 // Upgrader is used to upgrade HTTP connections to WebSocket connections.
@@ -145,7 +145,7 @@ func cmdInit() {
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
-	countMP4 = 0
+	//countMP4 = 0
 	username, conn := connectWS(w, r)
 	fmt.Printf("User %s connected\n", username)
 
@@ -237,20 +237,21 @@ func isMp4(msg []byte) bool {
 	}
 
 	// MP4 usually has "ftyp" at offset 4
-	//format := string(msg[4:8])
+	format := string(msg[4:8])
 	//fmt.Println("FORMAT: ", format)
-	/*
-		if format == "ftyp" || format == "isom" || format == "moov" || format == "mdat" || format == "moof" || format == "udta" {
-			return true
-		}
-	*/
-	if bytes.Contains(msg, []byte("moof")) || bytes.Contains(msg, []byte("ftyp")) || bytes.Contains(msg, []byte("isom")) || bytes.Contains(msg, []byte("moov")) || bytes.Contains(msg, []byte("mdat")) || bytes.Contains(msg, []byte("udta")) {
-		return true
-	}
-	if countMP4 == 1 {
+
+	if format == "ftyp" || format == "isom" || format == "moov" || format == "mdat" || format == "moof" || format == "udta" {
 		return true
 	}
 
+	/*
+		if bytes.Contains(msg, []byte("moof")) || bytes.Contains(msg, []byte("ftyp")) || bytes.Contains(msg, []byte("isom")) || bytes.Contains(msg, []byte("moov")) || bytes.Contains(msg, []byte("mdat")) || bytes.Contains(msg, []byte("udta")) {
+			return true
+		}
+		if countMP4 == 1 {
+			return true
+		}
+	*/
 	return false
 }
 
@@ -315,22 +316,22 @@ func forwordToReciver(sender string) {
 
 	receiverConn := clients[receiver].Conn
 	go func() {
-		var sentChunk []byte
+		//var sentChunk []byte
 		for chunk := range ffmpegOutChan {
 			//fmt.Println("CHUNK: ", chunk)
-			if countMP4 == 2 {
-				countMP4 = 0
-				mutex.Lock()
-				err := receiverConn.WriteMessage(websocket.BinaryMessage, sentChunk)
-				mutex.Unlock()
-				if err != nil {
-					fmt.Println("write error to receiver:", err)
-					return
-				}
-			} else {
-				countMP4++
-				sentChunk = append(sentChunk, chunk...)
+			//if countMP4 == 2 {
+			//countMP4 = 0
+			mutex.Lock()
+			err := receiverConn.WriteMessage(websocket.BinaryMessage, chunk)
+			mutex.Unlock()
+			if err != nil {
+				fmt.Println("write error to receiver:", err)
+				return
 			}
+			//} else {
+			//countMP4++
+			//sentChunk = append(sentChunk, chunk...)
+			//}
 		}
 	}()
 }
