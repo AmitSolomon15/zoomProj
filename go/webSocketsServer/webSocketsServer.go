@@ -37,7 +37,7 @@ var (
 	stdin  io.WriteCloser
 	stdout io.ReadCloser
 	//cmd    *exec.Cmd = cmdInit()
-	ffmpegOutChan = make(chan []byte, 1024*64)
+	ffmpegOutChan = make(chan []byte, 1024)
 	/*
 		clusterBuf     bytes.Buffer
 		insideCluster  bool
@@ -116,7 +116,7 @@ func cmdInit() {
 	go func() {
 
 		fmt.Println("ENTERED FIRST FUNC")
-		buf := make([]byte, 1024*64)
+		buf := make([]byte, 1024)
 		fmt.Println("READ FROM STDOUT")
 		for {
 			//fmt.Println("READABLE BITS ", reader.Buffered())
