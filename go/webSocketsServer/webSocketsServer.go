@@ -125,7 +125,7 @@ func cmdInit() {
 			//fmt.Println("STDOUT")
 			n, err := reader.Read(buf)
 
-			fmt.Println("buffer ", string(buf))
+			fmt.Println("buffer ", string(buf[:n]))
 			if err != nil {
 				fmt.Println("ffmpeg stdout error:", err)
 
@@ -186,7 +186,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			found = false
 			fmt.Println("MP4")
 			mutex.Lock()
-			fmt.Println("mp4 ", string(msg))
+			//fmt.Println("mp4 ", string(msg))
 			conn.WriteMessage(websocket.BinaryMessage, msg)
 			mutex.Unlock()
 			continue
@@ -305,7 +305,7 @@ func forwordToReciver(sender string) {
 	receiverConn := clients[receiver].Conn
 	go func() {
 		for chunk := range ffmpegOutChan {
-			fmt.Println("CHUNK: ", chunk)
+			//fmt.Println("CHUNK: ", chunk)
 			mutex.Lock()
 			err := receiverConn.WriteMessage(websocket.BinaryMessage, chunk)
 			mutex.Unlock()
