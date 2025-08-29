@@ -37,7 +37,7 @@ var (
 	stdin  io.WriteCloser
 	stdout io.ReadCloser
 	//cmd    *exec.Cmd = cmdInit()
-	ffmpegOutChan = make(chan []byte, 1024)
+	ffmpegOutChan = make(chan []byte, 1024*64)
 	/*
 		clusterBuf     bytes.Buffer
 		insideCluster  bool
