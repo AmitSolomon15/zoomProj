@@ -61,6 +61,7 @@ func main() {
 	connectMongo()
 	cmdInit()
 	http.HandleFunc("/ws", wsHandler)
+	http.HandleFunc("/disconnectWs", disconnectHandler)
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -236,7 +237,7 @@ func isMp4(msg []byte) bool {
 
 	// MP4 usually has "ftyp" at offset 4
 	format := string(msg[4:8])
-	fmt.Println("FORMAT: ", msg[4:8])
+	fmt.Println("FORMAT: ", format)
 	if format == "ftyp" || format == "isom" || format == "moov" || format == "mdat" || format == "moof" || format == "udta" {
 		return true
 	}
@@ -342,4 +343,11 @@ func handleIncoming(data []byte) {
 
 	fmt.Println("WRITTEN TO STDIN")
 
+}
+func disconnectHandler(w http.ResponseWriter, r *http.Request) {
+	username := r.URL.Query().Get("username")
+	if clients[username].Conn != nil {
+		delete(clients, username)
+		delete(clientsConnectionExist, username)
+	}
 }

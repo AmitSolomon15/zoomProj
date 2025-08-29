@@ -65,6 +65,7 @@ function SignedInUserPage(){
       form.append("username",username);
 
       navigator.sendBeacon("https://zoomproj-back.onrender.com/disconnect", form);
+      this.navigator.sendBeacon(`wss://zoomproj-back-ws.onrender.com/disconnectWs?username=${username}`)
     });
 
     
