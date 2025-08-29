@@ -236,6 +236,7 @@ func isMp4(msg []byte) bool {
 
 	// MP4 usually has "ftyp" at offset 4
 	format := string(msg[4:8])
+	fmt.Println("FORMAT: ", format)
 	if format == "ftyp" || format == "isom" || format == "moov" || format == "mdat" || format == "moof" || format == "udta" {
 		return true
 	}
