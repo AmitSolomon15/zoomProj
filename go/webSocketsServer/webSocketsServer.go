@@ -126,7 +126,7 @@ func cmdInit() {
 			//fmt.Println("STDOUT")
 			n, err := reader.Read(buf)
 
-			fmt.Println("buffer ", string(buf[:n]))
+			//fmt.Println("buffer ", string(buf[:n]))
 			if err != nil {
 				fmt.Println("ffmpeg stdout error:", err)
 
@@ -237,7 +237,7 @@ func isMp4(msg []byte) bool {
 
 	// MP4 usually has "ftyp" at offset 4
 	format := string(msg[4:8])
-	fmt.Println("FORMAT: ", format)
+	//fmt.Println("FORMAT: ", format)
 	if format == "ftyp" || format == "isom" || format == "moov" || format == "mdat" || format == "moof" || format == "udta" {
 		return true
 	}
