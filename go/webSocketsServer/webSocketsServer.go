@@ -30,23 +30,15 @@ type Client struct {
 }
 
 var (
-	clients = make(map[string]*Client)
-	mutex   sync.Mutex
-	//clientsConnected = make(map[string]bool)
-	client *mongo.Client
-	stdin  io.WriteCloser
-	stdout io.ReadCloser
-	//cmd    *exec.Cmd = cmdInit()
-	ffmpegOutChan = make(chan []byte, 1024)
-	/*
-		clusterBuf     bytes.Buffer
-		insideCluster  bool
-		clusterSize    int
-	*/
+	clients                = make(map[string]*Client)
+	mutex                  sync.Mutex
+	client                 *mongo.Client
+	stdin                  io.WriteCloser
+	stdout                 io.ReadCloser
+	ffmpegOutChan          = make(chan []byte, 1024)
 	ebmlHeader             []byte
 	headerCaptured         bool
 	clientsConnectionExist = make(map[string]bool)
-	//countMP4               int
 )
 
 // Upgrader is used to upgrade HTTP connections to WebSocket connections.
@@ -101,7 +93,7 @@ func cmdInit() {
 		"-x264-params", "keyint=10:scenecut=0", // shorter GOP -> more keyframes
 		"-flush_packets", "1",
 		"-avioflags", "direct",
-		"-g", "10", // force keyframe interval
+		"-g", "4", // force keyframe interval
 		"-vsync", "0",
 		"-f", "mp4",
 		"-movflags", "+frag_keyframe+empty_moov+default_base_moof+separate_moof",
