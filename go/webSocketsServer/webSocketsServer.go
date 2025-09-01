@@ -94,6 +94,7 @@ func cmdInit() {
 		"-flush_packets", "1",
 		"-avioflags", "direct",
 		"-g", "1", // force keyframe interval
+		"-frag_duration", "1000000",
 		"-vsync", "0",
 		"-muxdelay", "0",
 		"-muxpreload", "0",
