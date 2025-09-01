@@ -95,8 +95,10 @@ func cmdInit() {
 		"-avioflags", "direct",
 		"-g", "1", // force keyframe interval
 		"-vsync", "0",
+		"-muxdelay", "0",
+		"-muxpreload", "0",
 		"-f", "mp4",
-		"-movflags", "+frag_keyframe+empty_moov+default_base_moof+separate_moof",
+		"-movflags", "+frag_keyframe+empty_moov+default_base_moof+separate_moof+separate_moof+frag_every_frame",
 		"pipe:1",
 	)
 	stdin, _ = excmd.StdinPipe()
