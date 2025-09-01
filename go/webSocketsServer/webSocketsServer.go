@@ -357,6 +357,7 @@ func handleIncoming(data []byte) {
 }
 func disconnectHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("username")
+	fmt.Println("DISCONNECTING: ", username)
 	if clients[username].Conn != nil {
 		delete(clients, username)
 		delete(clientsConnectionExist, username)
