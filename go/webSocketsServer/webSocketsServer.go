@@ -153,6 +153,9 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		user2, err := findReciever(username)
 		if err != nil {
 			fmt.Println("ERROR ", err)
+			if err.Error() == "found no call" {
+				break
+			}
 			fmt.Println("BOOLS ", len(clientsConnectionExist))
 			fmt.Println("CLIENTS ", len(clients))
 			fmt.Println("found ", found)
@@ -357,7 +360,25 @@ func handleIncoming(data []byte) {
 
 }
 func disconnectHandler(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	collection := client.Database("users").Collection("usersInCall")
 	username := r.URL.Query().Get("username")
+
+	filter := bson.M{
+		"$or": []bson.M{
+			{"user1": username},
+			{"user2": username},
+		},
+	}
+
+	_, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		http.Error(w, "Failed to delete session", http.StatusInternalServerError)
+		return
+	}
+
 	fmt.Println("DISCONNECTING: ", username)
 	if clients[username].Conn != nil {
 		delete(clients, username)
