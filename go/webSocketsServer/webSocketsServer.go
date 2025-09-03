@@ -80,6 +80,7 @@ func cmdInit() {
 		"-flags", "low_delay",
 		"-probesize", "50M",
 		"-analyzeduration", "100M",
+		"-re",
 		"-f", "webm", // input format
 		"-i", "pipe:0", // read from stdin
 		"-ac", "2",
@@ -95,6 +96,7 @@ func cmdInit() {
 		"-avioflags", "direct",
 		"-g", "1", // force keyframe interval
 		"-frag_duration", "1000000",
+		"-use_wallclock_as_timestamps", "1",
 		"-vsync", "0",
 		"-muxdelay", "0",
 		"-muxpreload", "0",
