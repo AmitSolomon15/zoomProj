@@ -67,15 +67,7 @@ function SignedInUserPage(){
       navigator.sendBeacon("https://zoomproj-back.onrender.com/disconnect", form);
       //navigator.sendBeacon(`wss://zoomproj-back-ws.onrender.com/disconnectWs?username=${username}`)
     });
-        window.addEventListener("beforeunload", function () {
-      const username = document.querySelector(".name").innerText;
 
-      const form = new FormData();
-      form.append("username",username);
-
-      //navigator.sendBeacon("https://zoomproj-back.onrender.com/disconnect", form);
-      navigator.sendBeacon(`wss://zoomproj-back-ws.onrender.com/disconnectWs?username=${username}`)
-    });
 
     
 
