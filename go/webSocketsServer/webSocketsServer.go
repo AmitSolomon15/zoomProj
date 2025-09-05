@@ -100,7 +100,7 @@ func cmdInit() {
 		"-muxdelay", "0",
 		"-muxpreload", "0",
 		"-f", "mp4",
-		"-movflags", "+frag_keyframe+empty_moov+default_base_moof+separate_moof+separate_moof+frag_every_frame+genpts",
+		"-movflags", "+frag_keyframe+empty_moov+default_base_moof+separate_moof+separate_moof+frag_every_frame",
 		"pipe:1",
 	)
 	stdin, _ = excmd.StdinPipe()
