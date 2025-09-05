@@ -2,7 +2,7 @@ function SendDataToSock(username,sUsername){
   console.log("IM HERE1");
   
    
-  const username = document.querySelector(".name").innerText;
+  //const username = document.querySelector(".name").innerText;
   const socket = new WebSocket(`wss://zoomproj-back-ws.onrender.com/ws?username=${username}&sUsername=${sUsername}`);
   socket.binaryType = "arraybuffer";
   const video = document.querySelector(".vid");
