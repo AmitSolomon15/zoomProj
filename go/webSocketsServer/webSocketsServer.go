@@ -169,9 +169,11 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("User %s connected\n", username)
 
-	go forwordToReciver(callID, username)
-	go forwordToReciver(callID, sUsernam)
-
+	//go forwordToReciver(callID, username)
+	if clients[sUsernam].Conn != nil {
+		go forwordToReciver(callID, sUsernam)
+	}
+	fmt.Println("AFTER FORWORDING")
 	for {
 		_, err := findReciever(username)
 		if err != nil {
