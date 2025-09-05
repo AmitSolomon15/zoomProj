@@ -28,7 +28,7 @@ function SignedInUserPage(){
 
 
     function inviteUser(e){
-      const nameSelected = e.target.innerText;
+      var nameSelected = e.target.innerText;
       console.log(`chk1: ${nameSelected}`)
       const form = new FormData();
       const username = document.querySelector(".name").innerText;
