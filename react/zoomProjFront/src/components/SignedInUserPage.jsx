@@ -5,6 +5,7 @@ import SendDataToSock from "./SendDataToSock.jsx";
 function SignedInUserPage(){
     var isClicked = false;
     const username = localStorage.getItem("username");
+    const sUsername = "";
 
     /*
     const socket = new WebSocket("wss://zoomproj-back-ws.onrender.com/wsConn");
@@ -33,6 +34,7 @@ function SignedInUserPage(){
       console.log(username);
       localStorage.setItem("nUsername",username);
       localStorage.setItem("nUsername2",e.target.innerText);
+      sUsername = e.target.innerText;
       form.append("from",username);
       form.append("to",e.target.innerText);
       form.append("msg",`hello world from ${username}`);
@@ -119,7 +121,7 @@ function SignedInUserPage(){
         getUsers();
       }
       else{
-        SendDataToSock();
+        SendDataToSock(username,sUsername);
       }
     }   
 

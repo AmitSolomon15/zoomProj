@@ -28,17 +28,24 @@ type Client struct {
 	Conn     *websocket.Conn
 	Username string
 }
+type CallSession struct {
+	Cmd     *exec.Cmd
+	Stdin   io.WriteCloser
+	Stdout  io.ReadCloser
+	OutChan chan []byte
+}
 
 var (
-	clients                = make(map[string]*Client)
-	mutex                  sync.Mutex
-	client                 *mongo.Client
-	stdin                  io.WriteCloser
-	stdout                 io.ReadCloser
-	ffmpegOutChan          = make(chan []byte, 1024)
-	ebmlHeader             []byte
-	headerCaptured         bool
+	clients = make(map[string]*Client)
+	mutex   sync.Mutex
+	client  *mongo.Client
+	//stdin                  io.WriteCloser
+	//stdout                 io.ReadCloser
+	//ffmpegOutChan          = make(chan []byte, 1024)
+	//ebmlHeader             []byte
+	//headerCaptured         bool
 	clientsConnectionExist = make(map[string]bool)
+	callSessions           = make(map[string]*CallSession)
 )
 
 // Upgrader is used to upgrade HTTP connections to WebSocket connections.
@@ -52,7 +59,6 @@ func main() {
 	fmt.Println("ENTERED MAIN")
 
 	connectMongo()
-	cmdInit()
 	http.HandleFunc("/ws", wsHandler)
 	http.HandleFunc("/disconnectWs", disconnectHandler)
 	port := os.Getenv("PORT")
@@ -61,6 +67,12 @@ func main() {
 	}
 	http.ListenAndServe(":"+port, nil)
 
+}
+func buildCallID(user1, user2 string) string {
+	if user1 < user2 {
+		return user1 + "_" + user2
+	}
+	return user2 + "_" + user1
 }
 
 func connectMongo() {
@@ -73,8 +85,8 @@ func connectMongo() {
 		panic(err)
 	}
 }
-func cmdInit() {
-	excmd := exec.Command("ffmpeg",
+func cmdInit(callID string) (*CallSession, error) {
+	cmd := exec.Command("ffmpeg",
 		"-loglevel", "debug",
 		"-fflags", "nobuffer+discardcorrupt",
 		"-flags", "low_delay",
@@ -103,103 +115,89 @@ func cmdInit() {
 		"-movflags", "+frag_keyframe+empty_moov+default_base_moof+separate_moof+separate_moof+frag_every_frame",
 		"pipe:1",
 	)
-	stdin, _ = excmd.StdinPipe()
-	stdout, _ = excmd.StdoutPipe()
-	//fmt.Println("OUT: ", stdout)
-	excmd.Stderr = os.Stderr
-	excmd.Start()
-	reader := bufio.NewReader(stdout)
+	stdin, _ := cmd.StdinPipe()
+	stdout, _ := cmd.StdoutPipe()
+	cmd.Stderr = os.Stderr
+
+	session := &CallSession{
+		Cmd:     cmd,
+		Stdin:   stdin,
+		Stdout:  stdout,
+		OutChan: make(chan []byte, 100),
+	}
+
+	if err := cmd.Start(); err != nil {
+		return nil, err
+	}
+
+	// goroutine to read ffmpeg stdout → OutChan
 	go func() {
-
-		fmt.Println("ENTERED FIRST FUNC")
-		buf := make([]byte, 1024*64)
-		fmt.Println("READ FROM STDOUT")
+		reader := bufio.NewReader(stdout)
+		buf := make([]byte, 64*1024)
 		for {
-			//fmt.Println("READABLE BITS ", reader.Buffered())
-			//if stdout != nil && reader.Buffered() > 0 {
-			//fmt.Println("ENTERED FIRST FUNC LOOOP")
-			//fmt.Println("READABLE BITS ", reader.Buffered())
-			//fmt.Println(stdout.Read(buf))
-			//fmt.Println("STDOUT")
 			n, err := reader.Read(buf)
-
-			//fmt.Println("buffer ", string(buf[:n]))
 			if err != nil {
-				fmt.Println("ffmpeg stdout error:", err)
-
+				close(session.OutChan)
 				return
 			}
-			// copy to avoid re-use of buf
 			data := make([]byte, n)
 			copy(data, buf[:n])
-			//fmt.Println("buffer2 ", string(data))
-			ffmpegOutChan <- data
-			//}
-
+			session.OutChan <- data
 		}
 	}()
+
+	mutex.Lock()
+	callSessions[callID] = session
+	mutex.Unlock()
+
+	return session, nil
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
 	//countMP4 = 0
-	username, conn := connectWS(w, r)
+	username, sUsernam, conn := connectWS(w, r)
+
+	callID := buildCallID(username, sUsernam)
+
+	mutex.Lock()
+	session, ok := callSessions[callID]
+	mutex.Unlock()
+
+	if !ok {
+		session, _ = cmdInit(callID)
+	}
+
 	fmt.Printf("User %s connected\n", username)
 
-	go forwordToReciver(username)
-
-	// Listen for messages
-	found := false
+	go forwordToReciver(callID, username)
+	go forwordToReciver(callID, sUsernam)
 
 	for {
-		user2, err := findReciever(username)
+		_, err := findReciever(username)
 		if err != nil {
 			fmt.Println("ERROR ", err)
 			if err.Error() == "found no call" {
 				break
 			}
-			fmt.Println("BOOLS ", len(clientsConnectionExist))
-			fmt.Println("CLIENTS ", len(clients))
-			fmt.Println("found ", found)
-			if len(clientsConnectionExist) < len(clients) {
-				fmt.Println("RETURN")
-				return
-			}
 			continue
-		} else {
-			clientsConnectionExist[user2] = true
 		}
 
-		fmt.Println("ENTERED THe LOOP")
-
-		mutex.Lock()
+		// Read a message from this client
 		_, msg, err := conn.ReadMessage()
-		mutex.Unlock()
-
-		//fmt.Println("msgType is: ", msgType)
-
 		if err != nil {
 			fmt.Println("Read error:", err)
-			fmt.Println("BREAKING")
 			break
 		}
 
+		// MP4 chunks just echo back to sender
 		if isMp4(msg) {
-			found = false
-			fmt.Println("MP4")
-			mutex.Lock()
-			//fmt.Println("mp4 ", string(msg))
 			conn.WriteMessage(websocket.BinaryMessage, msg)
-			mutex.Unlock()
 			continue
-		} else {
-			fmt.Println("ISWEB: ", isWebM(msg))
-			fmt.Println("FOUNd: ", found)
-			if found || isWebM(msg) {
-				fmt.Println("SENDING")
-				handleIncoming(msg)
-				found = true
-			}
+		}
 
+		// WebM chunks are forwarded to ffmpeg (session stdin)
+		if isWebM(msg) {
+			session.Stdin.Write(msg)
 		}
 
 	}
@@ -209,20 +207,21 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	delete(clients, username)
 }
 
-func connectWS(w http.ResponseWriter, r *http.Request) (string, *websocket.Conn) {
+func connectWS(w http.ResponseWriter, r *http.Request) (string, string, *websocket.Conn) {
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		fmt.Println("Error upgrading:", err)
-		return "", nil
+		return "", "", nil
 	}
 	fmt.Println("CONNECTED")
 
 	username := r.URL.Query().Get("username")
+	sUsername := r.URL.Query().Get("sUsername")
 
 	clients[username] = &Client{Conn: conn}
 
-	return username, conn
+	return username, sUsername, conn
 }
 
 func isMp4(msg []byte) bool {
@@ -305,58 +304,33 @@ func findReciever(sender string) (string, error) {
 	return receiver, nil
 }
 
-func forwordToReciver(sender string) {
-	fmt.Println("forwordToReciver")
-	receiver, err := findReciever(sender)
-	if err != nil {
-		fmt.Println("ERROR ", err)
-		return
-	}
+func forwordToReciver(callID, receiver string) {
+	mutex.Lock()
+	session := callSessions[callID]
+	mutex.Unlock()
 
 	receiverConn := clients[receiver].Conn
 	go func() {
-		//var sentChunk []byte
-		for chunk := range ffmpegOutChan {
-			//fmt.Println("CHUNK: ", chunk)
-			//if countMP4 == 2 {
-			//countMP4 = 0
+		for chunk := range session.OutChan {
 			mutex.Lock()
 			err := receiverConn.WriteMessage(websocket.BinaryMessage, chunk)
 			mutex.Unlock()
 			if err != nil {
-				fmt.Println("write error to receiver:", err)
 				return
 			}
-			//} else {
-			//countMP4++
-			//sentChunk = append(sentChunk, chunk...)
-			//}
 		}
 	}()
 }
 
-func handleIncoming(data []byte) {
-	if !headerCaptured {
-		idx := bytes.Index(data, []byte{0x1F, 0x43, 0xB6, 0x75})
-		if idx > 0 {
-			ebmlHeader = append([]byte{}, data[:idx]...)
-			headerCaptured = true
-			//fixedData = data
-			mutex.Lock()
-			stdin.Write(ebmlHeader)
-			mutex.Unlock()
-			data = data[idx:]
-			mutex.Lock()
-			stdin.Write(data)
-			mutex.Unlock()
-		}
-	} else {
-		mutex.Lock()
-		stdin.Write(data)
-		mutex.Unlock()
+func handleIncoming(callID string, data []byte) {
+	mutex.Lock()
+	session, ok := callSessions[callID]
+	mutex.Unlock()
+	if !ok {
+		return
 	}
-	//fmt.Println(data)
 
+	session.Stdin.Write(data)
 	fmt.Println("WRITTEN TO STDIN")
 
 }
