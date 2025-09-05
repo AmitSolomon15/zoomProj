@@ -28,15 +28,16 @@ function SignedInUserPage(){
 
 
     function inviteUser(e){
-      console.log(`chk1: ${e.target.innerText}`)
+      const nameSelected = e.target.innerText;
+      console.log(`chk1: ${nameSelected}`)
       const form = new FormData();
       const username = document.querySelector(".name").innerText;
       console.log(username);
       localStorage.setItem("nUsername",username);
-      localStorage.setItem("nUsername2",e.target.innerText);
-      sUsername = e.target.innerText;
+      localStorage.setItem("nUsername2",nameSelected);
+      sUsername = nameSelected;
       form.append("from",username);
-      form.append("to",e.target.innerText);
+      form.append("to",nameSelected);
       form.append("msg",`hello world from ${username}`);
       axios.post("https://zoomproj-back.onrender.com/connect-user-udp",form)
         .then(Response =>{
