@@ -170,6 +170,8 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("User %s connected\n", username)
 
 	//go forwordToReciver(callID, username)
+	fmt.Println("sec ", sUsernam)
+	fmt.Println("sec ", clients[sUsernam])
 	if clients[sUsernam].Conn != nil {
 		go forwordToReciver(callID, sUsernam)
 
@@ -195,10 +197,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			if isMp4(msg) {
 				conn.WriteMessage(websocket.BinaryMessage, msg)
 				continue
-			}
-
-			// WebM chunks are forwarded to ffmpeg (session stdin)
-			if isWebM(msg) {
+			} else {
 				session.Stdin.Write(msg)
 			}
 
