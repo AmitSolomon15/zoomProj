@@ -5,7 +5,7 @@ import SendDataToSock from "./SendDataToSock.jsx";
 function SignedInUserPage(){
     var isClicked = false;
     const username = localStorage.getItem("username");
-    const sUsername = "";
+    var sUsername = "";
 
     /*
     const socket = new WebSocket("wss://zoomproj-back-ws.onrender.com/wsConn");
