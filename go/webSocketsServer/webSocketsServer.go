@@ -96,10 +96,10 @@ func cmdInit() {
 		"-avioflags", "direct",
 		"-g", "1", // force keyframe interval
 		"-frag_duration", "1000000",
-		"-use_wallclock_as_timestamps", "1",
 		"-vsync", "0",
 		"-muxdelay", "0",
 		"-muxpreload", "0",
+		"-vsync", "passthrough",
 		"-f", "mp4",
 		"-movflags", "+frag_keyframe+empty_moov+default_base_moof+separate_moof+separate_moof+frag_every_frame+genpts",
 		"pipe:1",
