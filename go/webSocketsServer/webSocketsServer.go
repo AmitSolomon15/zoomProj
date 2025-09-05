@@ -172,41 +172,42 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	//go forwordToReciver(callID, username)
 	if clients[sUsernam].Conn != nil {
 		go forwordToReciver(callID, sUsernam)
-	}
-	fmt.Println("AFTER FORWORDING")
-	for {
-		_, err := findReciever(username)
-		if err != nil {
-			fmt.Println("ERROR ", err)
-			if err.Error() == "found no call" {
+
+		fmt.Println("AFTER FORWORDING")
+		for {
+			_, err := findReciever(username)
+			if err != nil {
+				fmt.Println("ERROR ", err)
+				if err.Error() == "found no call" {
+					break
+				}
+				continue
+			}
+
+			// Read a message from this client
+			_, msg, err := conn.ReadMessage()
+			if err != nil {
+				fmt.Println("Read error:", err)
 				break
 			}
-			continue
+
+			// MP4 chunks just echo back to sender
+			if isMp4(msg) {
+				conn.WriteMessage(websocket.BinaryMessage, msg)
+				continue
+			}
+
+			// WebM chunks are forwarded to ffmpeg (session stdin)
+			if isWebM(msg) {
+				session.Stdin.Write(msg)
+			}
+
 		}
 
-		// Read a message from this client
-		_, msg, err := conn.ReadMessage()
-		if err != nil {
-			fmt.Println("Read error:", err)
-			break
-		}
-
-		// MP4 chunks just echo back to sender
-		if isMp4(msg) {
-			conn.WriteMessage(websocket.BinaryMessage, msg)
-			continue
-		}
-
-		// WebM chunks are forwarded to ffmpeg (session stdin)
-		if isWebM(msg) {
-			session.Stdin.Write(msg)
-		}
-
+		// Clean up on disconnect
+		fmt.Println("DELETING")
+		delete(clients, username)
 	}
-
-	// Clean up on disconnect
-	fmt.Println("DELETING")
-	delete(clients, username)
 }
 
 func connectWS(w http.ResponseWriter, r *http.Request) (string, string, *websocket.Conn) {
